@@ -1,0 +1,170 @@
+/*
+Theme Name: Mobiliarios Famarsa Theme
+Version: 1.0
+Description: Theme for mobiliarios famarsa
+Author: Eric Martínez
+Author URI: https://github.com/ejmm19
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+*/
+.product-item {
+  position: relative;
+}
+.product-item:hover .image-hover {
+  opacity: 0.8;
+}
+.product-item:hover .middle {
+  opacity: 1;
+}
+.product-item .image-hover {
+  opacity: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: 0.5s ease;
+  backface-visibility: hidden;
+}
+.product-item .middle {
+  transition: 0.5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+.product-item .middle .text {
+  background-color: #0078d7;
+  color: white;
+  font-size: 16px;
+  padding: 16px 32px;
+}
+#home-view {
+  padding-top: 360px;
+}
+#home-view .panoramic-image {
+  background-size: cover;
+  position: absolute;
+  left: 0;
+  height: 440px;
+  width: 100%;
+  background-position-y: center;
+  filter: brightness(0.5);
+  -webkit-filter: brightness(0.5);
+  top: 130px;
+  z-index: -1;
+}
+a {
+  font-family: "Noto Sans", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  color: #343a40;
+}
+p.parrafo {
+  font-family: "Noto Sans", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+  color: #343a40;
+}
+span {
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  color: #343a40;
+}
+header#mf-header {
+  background: #ffffff;
+  color: #343a40;
+}
+header#mf-header .container {
+  height: 100px;
+}
+header#mf-header .container .row {
+  height: 100px;
+}
+header#mf-header img {
+  max-width: 100%;
+}
+header#mf-header #separator {
+  height: 30px;
+  background: #a70000;
+}
+header#mf-header ul#menu-menu-principal {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin: 0;
+  padding: 0;
+}
+header#mf-header ul#menu-menu-principal li {
+  padding: 0 10px;
+}
+header#mf-header ul#menu-menu-principal li a {
+  text-decoration: none;
+}
+#product-list .row .product-item a {
+  text-decoration: none;
+}
+#product-list .row .product-item a figure {
+  display: flex;
+  justify-content: center;
+}
+#product-list .row .product-item a figure img {
+  max-width: 300px;
+  max-height: 300px;
+}
+#product-list .row .product-item a h4 {
+  font-size: 1rem;
+}
+@media (min-width: 576px) {
+  #product-list .row .product-item a figure img {
+    max-width: 260px;
+    max-height: 260px;
+  }
+}
+@media (min-width: 1024px) {
+  #product-list .row .product-item a figure img {
+    max-width: 300px;
+    max-height: 300px;
+  }
+}
+@media (min-width: 1200px) {
+  #product-list .row .product-item a figure img {
+    max-width: 350px;
+    max-height: 350px;
+  }
+}
+footer {
+  background-color: #293a45;
+  color: #ffffff;
+}
+#elements-carousel {
+  background-color: #fff;
+  padding: 30px 0;
+  border-radius: 15px;
+  -webkit-box-shadow: 0 22px 40px -20px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0 22px 40px -20px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 22px 40px -20px rgba(0, 0, 0, 0.75);
+}
+#elements-carousel .VueCarousel-slide {
+  position: relative;
+  color: #343a40;
+  font-size: 1rem;
+  text-align: center;
+  min-height: 100px;
+}
+#elements-carousel .VueCarousel-slide img {
+  cursor: pointer;
+}
+#elements-products-item {
+  margin-top: 60px;
+}
+#elements-products-item .product-item {
+  padding: 10px;
+}
+#elements-products-item .product-item img {
+  width: 100%;
+  cursor: pointer;
+}

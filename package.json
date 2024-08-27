@@ -1,0 +1,19 @@
+{
+  "name": "mobiliariosfamarsa",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ejmm19/mobiliariosWP.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ejmm19/mobiliariosWP/issues"
+  },
+  "homepage": "https://github.com/ejmm19/mobiliariosWP#readme"
+}
