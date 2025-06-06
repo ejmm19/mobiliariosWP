@@ -38,16 +38,29 @@ add_action('init', 'reg_cat');
 function mf_ajax_handler(): void
 {
     check_ajax_referer('mf_ajax_nonce', 'security');
-    $category = $_POST['data'] ?? '';
+    $data = $_POST['data'] ?? '';
+    $category = sanitize_text_field($data['category']);
+    $per_page = sanitize_text_field($data['per_page']);
+    $products = [];
+
     if (!empty($category)) {
         $productModel = new \Model\Product();
-        $products = $productModel->getProducts(10, $category);
+        $products = $productModel->getProducts($per_page, $category);
     }
-    $response = [
-        'message' => '¡Llamada AJAX exitosa!'
-    ];
+    if (!$products->have_posts()) {
+        wp_send_json_error(['message' => 'No products found for the specified category.']);
+    }
 
-    wp_send_json_success($response);
+    $products = array_map(function ($post) {
+        return [
+            'name' => get_the_title($post->ID),
+            'image' => get_the_post_thumbnail_url($post->ID),
+            'link' => get_the_permalink($post->ID),
+        ];
+    }, $products->posts);
+
+
+    wp_send_json_success($products);
 }
 add_action('wp_ajax_my_action', 'mf_ajax_handler');
 add_action('wp_ajax_nopriv_my_action', 'mf_ajax_handler');

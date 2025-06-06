@@ -5,6 +5,196 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.26] - 2025-06-02
+### Changed
+- Internal updates.
+
+## [0.4.25] - 2025-05-26
+### Changed
+- Update dependencies. [#43569] [#43578]
+
+## [0.4.24] - 2025-05-19
+### Changed
+- Update package dependencies. [#43398]
+
+## [0.4.23] - 2025-05-12
+### Changed
+- Stable release management: Do not ship source files. [#43310]
+- Update package dependencies. [#43400]
+
+## [0.4.22] - 2025-05-05
+### Changed
+- Update package dependencies. [#43320] [#43326] [#43350]
+
+### Fixed
+- Linting: Address final rules in WordPress Stylelint config. [#43296]
+- Linting: Do additional stylesheet cleanup. [#43247]
+
+## [0.4.21] - 2025-04-28
+### Fixed
+- Linting: Fix more Stylelint violations. [#43213]
+- Linting: Remove outdated vendor prefixes in stylesheets. [#43219]
+
+## [0.4.20] - 2025-04-14
+### Fixed
+- Linting: Format SCSS imports consistently. [#43018]
+- Linting: Update stylesheets to use WordPress rules for fonts and colors. [#42920] [#42928]
+- Linting: Use double colon notation for pseudo-element selectors. [#43019]
+
+## [0.4.19] - 2025-04-07
+### Changed
+- Code: First pass of style coding standards. [#42734]
+- Update dependencies. [#42820]
+- Update package dependencies. [#42809]
+
+## [0.4.18] - 2025-03-31
+### Changed
+- Update dependencies. [#42678]
+
+## [0.4.17] - 2025-03-24
+### Changed
+- Update dependencies. [#42564]
+
+## [0.4.16] - 2025-03-18
+### Changed
+- Update package dependencies. [#42511]
+
+## [0.4.15] - 2025-03-17
+### Changed
+- Update dependencies. [#42498]
+
+## [0.4.14] - 2025-03-12
+### Added
+- Provide connection data to footer component. [#42000]
+
+### Changed
+- Update package dependencies. [#42384]
+
+## [0.4.13] - 2025-03-10
+### Changed
+- Internal updates.
+
+## [0.4.12] - 2025-03-03
+### Changed
+- Update package dependencies. [#42163]
+
+## [0.4.11] - 2025-02-24
+### Changed
+- Update dependencies. [#39855]
+
+## [0.4.10] - 2025-02-17
+### Changed
+- Update dependencies. [#39855]
+
+## [0.4.9] - 2025-02-11
+### Changed
+- Update dependencies. [#39855]
+
+## [0.4.8] - 2025-02-10
+### Changed
+- Updated package dependencies. [#41491] [#41577]
+
+## [0.4.7] - 2025-02-03
+### Changed
+- Updated package dependencies. [#41286]
+
+## [0.4.6] - 2025-01-20
+### Changed
+- Updated package dependencies. [#41099]
+
+## [0.4.5] - 2025-01-06
+### Changed
+- Updated package dependencies. [#40792] [#40797] [#40813] [#40843]
+
+## [0.4.4] - 2024-12-16
+### Changed
+- Updated package dependencies. [#40564]
+
+## [0.4.3] - 2024-12-09
+### Changed
+- Updated package dependencies. [#40363]
+
+## [0.4.2] - 2024-11-26
+### Changed
+- Update dependencies. [#39855]
+
+## [0.4.1] - 2024-11-25
+### Changed
+- Updated package dependencies. [#40288]
+
+## [0.4.0] - 2024-11-18
+### Removed
+- General: Update minimum PHP version to 7.2. [#40147]
+
+## [0.3.39] - 2024-11-11
+### Changed
+- Updated package dependencies. [#39999] [#40060]
+
+## [0.3.38] - 2024-11-04
+### Added
+- Enable test coverage. [#39961]
+
+## [0.3.37] - 2024-10-21
+### Changed
+- Update dependencies. [#39781]
+
+## [0.3.36] - 2024-10-14
+### Changed
+- Updated package dependencies. [#39707]
+
+## [0.3.35] - 2024-10-07
+### Changed
+- Updated package dependencies. [#39592] [#39594] [#39639]
+
+## [0.3.34] - 2024-09-30
+### Changed
+- Update dependencies. [#39528]
+
+## [0.3.33] - 2024-09-23
+### Changed
+- Update dependencies. [#38017]
+
+## [0.3.32] - 2024-09-16
+### Changed
+- Updated package dependencies. [#39332]
+
+## [0.3.31] - 2024-09-10
+### Changed
+- Updated package dependencies. [#39302]
+
+## [0.3.30] - 2024-09-09
+### Changed
+- Updated package dependencies. [#39176] [#39278]
+
+## [0.3.29] - 2024-09-02
+### Changed
+- Admin menu: change order of Jetpack sub-menu items [#39095]
+- Updated package dependencies. [#39111]
+
+## [0.3.28] - 2024-08-26
+### Changed
+- Updated package dependencies. [#39004]
+
+## [0.3.27] - 2024-08-21
+### Changed
+- Internal updates.
+
+## [0.3.26] - 2024-08-19
+### Changed
+- Updated package dependencies. [#38662]
+
+## [0.3.25] - 2024-07-29
+### Fixed
+- Updated package dependencies. [#38464]
+
+## [0.3.24] - 2024-07-22
+### Changed
+- Update dependencies. [#38017]
+
+## [0.3.23] - 2024-07-08
+### Changed
+- Updated package dependencies. [#38132] [#38133]
+
 ## [0.3.22] - 2024-06-24
 ### Changed
 - Update dependencies. [#37979]
@@ -134,8 +324,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.50] - 2023-09-04
 ### Changed
-- Updated package dependencies. [#32803]
-- Updated package dependencies. [#32804]
+- Updated package dependencies. [#32803] [#32804]
 
 ## [0.2.49] - 2023-08-28
 ### Changed
@@ -147,8 +336,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.47] - 2023-07-25
 ### Changed
-- Updated package dependencies. [#31923]
-- Updated package dependencies. [#32040]
+- Updated package dependencies. [#31923] [#32040]
 - Update props passed to JetpackFooter [#31627]
 
 ## [0.2.46] - 2023-07-17
@@ -367,6 +555,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PHPCS: Fix `WordPress.Security.ValidatedSanitizedInput`
 - Updated package dependencies.
 
+[0.4.26]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.25...v0.4.26
+[0.4.25]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.24...v0.4.25
+[0.4.24]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.23...v0.4.24
+[0.4.23]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.22...v0.4.23
+[0.4.22]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.21...v0.4.22
+[0.4.21]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.20...v0.4.21
+[0.4.20]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.19...v0.4.20
+[0.4.19]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.18...v0.4.19
+[0.4.18]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.17...v0.4.18
+[0.4.17]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.16...v0.4.17
+[0.4.16]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.15...v0.4.16
+[0.4.15]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.14...v0.4.15
+[0.4.14]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.13...v0.4.14
+[0.4.13]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.12...v0.4.13
+[0.4.12]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.11...v0.4.12
+[0.4.11]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.10...v0.4.11
+[0.4.10]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.9...v0.4.10
+[0.4.9]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.8...v0.4.9
+[0.4.8]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.7...v0.4.8
+[0.4.7]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.6...v0.4.7
+[0.4.6]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.5...v0.4.6
+[0.4.5]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.4...v0.4.5
+[0.4.4]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.3...v0.4.4
+[0.4.3]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.2...v0.4.3
+[0.4.2]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.1...v0.4.2
+[0.4.1]: https://github.com/Automattic/jetpack-wordads/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.39...v0.4.0
+[0.3.39]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.38...v0.3.39
+[0.3.38]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.37...v0.3.38
+[0.3.37]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.36...v0.3.37
+[0.3.36]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.35...v0.3.36
+[0.3.35]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.34...v0.3.35
+[0.3.34]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.33...v0.3.34
+[0.3.33]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.32...v0.3.33
+[0.3.32]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.31...v0.3.32
+[0.3.31]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.30...v0.3.31
+[0.3.30]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.29...v0.3.30
+[0.3.29]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.28...v0.3.29
+[0.3.28]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.27...v0.3.28
+[0.3.27]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.26...v0.3.27
+[0.3.26]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.25...v0.3.26
+[0.3.25]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.24...v0.3.25
+[0.3.24]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.23...v0.3.24
+[0.3.23]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.22...v0.3.23
 [0.3.22]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.21...v0.3.22
 [0.3.21]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.20...v0.3.21
 [0.3.20]: https://github.com/Automattic/jetpack-wordads/compare/v0.3.19...v0.3.20

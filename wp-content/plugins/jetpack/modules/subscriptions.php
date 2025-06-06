@@ -15,11 +15,13 @@
 
 // phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed -- TODO: Move classes to appropriately-named class files.
 
+use Automattic\Jetpack\Admin_UI\Admin_Menu;
 use Automattic\Jetpack\Connection\Manager as Connection_Manager;
 use Automattic\Jetpack\Connection\XMLRPC_Async_Call;
 use Automattic\Jetpack\Redirect;
 use Automattic\Jetpack\Status;
 use Automattic\Jetpack\Status\Host;
+use Automattic\Jetpack\Subscribers_Dashboard\Dashboard as Subscribers_Dashboard;
 
 add_action( 'jetpack_modules_loaded', 'jetpack_subscriptions_load' );
 
@@ -128,6 +130,7 @@ class Jetpack_Subscriptions {
 
 		// Set "social_notifications_subscribe" option during the first-time activation.
 		add_action( 'jetpack_activate_module_subscriptions', array( $this, 'set_social_notifications_subscribe' ) );
+		add_action( 'jetpack_activate_module_subscriptions', array( $this, 'set_featured_image_in_email_default' ) );
 
 		// Hide subscription messaging in Publish panel for posts that were published in the past
 		add_action( 'init', array( $this, 'register_post_meta' ), 20 );
@@ -146,6 +149,8 @@ class Jetpack_Subscriptions {
 
 		// Track categories created through the category editor page
 		add_action( 'wp_ajax_add-tag', array( $this, 'track_newsletter_category_creation' ), 1 );
+		$subscribers_dashboard = new Subscribers_Dashboard();
+		$subscribers_dashboard::init();
 	}
 
 	/**
@@ -369,21 +374,6 @@ class Jetpack_Subscriptions {
 			'stc_enabled'
 		);
 
-		/** Enable Subscribe Modal */
-
-		add_settings_field(
-			'jetpack_subscriptions_comment_subscribe',
-			__( 'Enable Subscribe Modal', 'jetpack' ),
-			array( $this, 'subscribe_modal_setting' ),
-			'discussion',
-			'jetpack_subscriptions'
-		);
-
-		register_setting(
-			'discussion',
-			'sm_enabled'
-		);
-
 		/** Email me whenever: Someone subscribes to my blog */
 		/* @since 8.1 */
 
@@ -461,22 +451,6 @@ class Jetpack_Subscriptions {
 				array( 'em' => array() )
 			);
 			?>
-		</p>
-
-		<?php
-	}
-
-	/**
-	 * Subscribe Modal Toggle.
-	 */
-	public function subscribe_modal_setting() {
-
-		$sm_enabled = get_option( 'sm_enabled', 1 );
-		?>
-
-		<p class="description">
-			<input type="checkbox" name="sm_enabled" id="jetpack-subscribe-modal" value="1" <?php checked( $sm_enabled, 1 ); ?> />
-			<?php esc_html_e( 'Show a popup subscribe modal to readers.', 'jetpack' ); ?>
 		</p>
 
 		<?php
@@ -725,7 +699,7 @@ class Jetpack_Subscriptions {
 		do_action( 'jetpack_subscriptions_form_submission', $result );
 
 		wp_safe_redirect( "$redirect#$redirect_fragment" );
-		exit;
+		exit( 0 );
 	}
 
 	/**
@@ -887,7 +861,7 @@ class Jetpack_Subscriptions {
 		$post_id = (int) $post_id;
 
 		/** This filter is already documented in core/wp-includes/comment-functions.php */
-		$cookie_lifetime = apply_filters( 'comment_cookie_lifetime', 30000000 );
+		$cookie_lifetime = apply_filters( 'comment_cookie_lifetime', YEAR_IN_SECONDS );
 
 		/**
 		 * Filter the Jetpack Comment cookie path.
@@ -935,6 +909,15 @@ class Jetpack_Subscriptions {
 		if ( false === get_option( 'social_notifications_subscribe' ) ) {
 			add_option( 'social_notifications_subscribe', 'off' );
 		}
+	}
+
+	/**
+	 * Set the featured image in email option to `1` when the Subscriptions module is activated in the first time.
+	 *
+	 * @return void
+	 */
+	public function set_featured_image_in_email_default() {
+		add_option( 'wpcom_featured_image_in_email', 1 );
 	}
 
 	/**
@@ -1003,6 +986,17 @@ class Jetpack_Subscriptions {
 	 * @return void
 	 */
 	public function add_subscribers_menu() {
+		/**
+		 * Enables the new in development subscribers in wp-admin dashboard.
+		 *
+		 * @since 9.5.0
+		 *
+		 * @param bool If the new dashboard is enabled. Default false.
+		 */
+		if ( apply_filters( 'jetpack_wp_admin_subscriber_management_enabled', false ) ) {
+			return;
+		}
+
 		/*
 		 * Do not display any menu on WoA and WordPress.com Simple sites (unless Classic wp-admin is enabled).
 		 * They already get a menu item under Users via nav-unification.
@@ -1031,13 +1025,13 @@ class Jetpack_Subscriptions {
 			array( 'site' => $blog_id ? $blog_id : $status->get_site_suffix() )
 		);
 
-		add_submenu_page(
-			'jetpack',
-			esc_attr__( 'Subscribers', 'jetpack' ),
+		Admin_Menu::add_menu(
+			__( 'Subscribers', 'jetpack' ),
 			__( 'Subscribers', 'jetpack' ) . ' <span class="dashicons dashicons-external"></span>',
 			'manage_options',
 			esc_url( $link ),
-			null
+			null,
+			11
 		);
 	}
 
@@ -1077,3 +1071,5 @@ Jetpack_Subscriptions::init();
 require __DIR__ . '/subscriptions/views.php';
 require __DIR__ . '/subscriptions/subscribe-modal/class-jetpack-subscribe-modal.php';
 require __DIR__ . '/subscriptions/subscribe-overlay/class-jetpack-subscribe-overlay.php';
+require __DIR__ . '/subscriptions/subscribe-floating-button/class-jetpack-subscribe-floating-button.php';
+require __DIR__ . '/subscriptions/newsletter-widget/class-jetpack-newsletter-dashboard-widget.php';

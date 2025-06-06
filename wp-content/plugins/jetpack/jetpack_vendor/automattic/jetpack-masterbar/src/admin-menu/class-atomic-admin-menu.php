@@ -12,7 +12,7 @@ use Automattic\Jetpack\Current_Plan as Jetpack_Plan;
 use Automattic\Jetpack\JITMS\JITM;
 use Automattic\Jetpack\Modules;
 use Automattic\Jetpack\Redirect;
-use Automattic\Jetpack\Status;
+use Automattic\Jetpack\Subscribers_Dashboard\Dashboard as Subscribers_Dashboard;
 
 require_once __DIR__ . '/class-admin-menu.php';
 
@@ -45,11 +45,6 @@ class Atomic_Admin_Menu extends Admin_Menu {
 			},
 			0
 		);
-
-		// Add notices to the settings pages when there is a Calypso page available.
-		if ( get_option( 'wpcom_admin_interface' ) === 'wp-admin' ) {
-			add_action( 'current_screen', array( $this, 'add_settings_page_notice' ) );
-		}
 	}
 
 	/**
@@ -78,15 +73,8 @@ class Atomic_Admin_Menu extends Admin_Menu {
 		$this->add_my_home_menu();
 		$this->remove_gutenberg_menu();
 
-		// We don't need the `My Mailboxes` when the interface is set to wp-admin or the site is a staging site,
-		if ( get_option( 'wpcom_admin_interface' ) !== 'wp-admin' && ! get_option( 'wpcom_is_staging_site' ) ) {
-			$this->add_my_mailboxes_menu();
-		}
-
 		// Not needed outside of wp-admin.
 		if ( ! $this->is_api_request ) {
-			$this->add_browse_sites_link();
-			$this->add_site_card_menu();
 			$this->add_new_site_link();
 		}
 
@@ -122,6 +110,26 @@ class Atomic_Admin_Menu extends Admin_Menu {
 	}
 
 	/**
+	 * Add the appearance menu.
+	 *
+	 * @return string
+	 */
+	public function add_appearance_menu() {
+		$customize_url                 = parent::add_appearance_menu();
+		$should_display_additional_css = current_user_can( 'customize' ) && ! wp_is_block_theme();
+
+		if ( ! $should_display_additional_css ) {
+			return $customize_url;
+		}
+
+		$customize_custom_css_url = add_query_arg( array( 'autofocus' => array( 'section' => 'custom_css' ) ), $customize_url );
+		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
+		add_submenu_page( 'themes.php', esc_attr__( 'Additional CSS', 'jetpack-masterbar' ), __( 'Additional CSS', 'jetpack-masterbar' ), 'customize', esc_url( $customize_custom_css_url ), null, 20 );
+
+		return $customize_url;
+	}
+
+	/**
 	 * Adds Users menu.
 	 */
 	public function add_users_menu() {
@@ -133,15 +141,13 @@ class Atomic_Admin_Menu extends Admin_Menu {
 			$this->update_submenus( $slug, $submenus_to_update );
 		}
 
-		if ( ! $this->use_wp_admin_interface() ) {
+		if ( ! $this->use_wp_admin_interface() && ! apply_filters( 'jetpack_wp_admin_subscriber_management_enabled', false ) ) {
 			// The 'Subscribers' menu exists in the Jetpack menu for Classic wp-admin interface, so only add it for non-wp-admin interfaces.
 			// // @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
 			add_submenu_page( 'users.php', esc_attr__( 'Subscribers', 'jetpack-masterbar' ), __( 'Subscribers', 'jetpack-masterbar' ), 'list_users', 'https://wordpress.com/subscribers/' . $this->domain, null );
-
-			// When the interface is not set to wp-admin, we replace the Profile submenu.
-			remove_submenu_page( 'users.php', 'profile.php' );
-			// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
-			add_submenu_page( 'users.php', esc_attr__( 'My Profile', 'jetpack-masterbar' ), __( 'My Profile', 'jetpack-masterbar' ), 'read', 'https://wordpress.com/me/', null );
+		} elseif ( apply_filters( 'jetpack_wp_admin_subscriber_management_enabled', false ) ) {
+			$subscribers_dashboard = new Subscribers_Dashboard();
+			$subscribers_dashboard->add_wp_admin_submenu();
 		}
 
 		// Users who can't 'list_users' will see "Profile" menu & "Profile > Account Settings" as submenu.
@@ -195,21 +201,6 @@ class Atomic_Admin_Menu extends Admin_Menu {
 	}
 
 	/**
-	 * Adds the site switcher link if user has more than one site.
-	 */
-	public function add_browse_sites_link() {
-		$site_count = get_user_option( 'wpcom_site_count' );
-		if ( ! $site_count || $site_count < 2 ) {
-			return;
-		}
-
-		// Add the menu item.
-		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
-		add_menu_page( __( 'site-switcher', 'jetpack-masterbar' ), __( 'Browse sites', 'jetpack-masterbar' ), 'read', 'https://wordpress.com/sites', null, 'dashicons-arrow-left-alt2', 0 );
-		add_filter( 'add_menu_classes', array( $this, 'set_browse_sites_link_class' ) );
-	}
-
-	/**
 	 * Adds a custom element class for Site Switcher menu item.
 	 *
 	 * @param array $menu Associative array of administration menu items.
@@ -240,75 +231,6 @@ class Atomic_Admin_Menu extends Admin_Menu {
 
 		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
 		add_menu_page( __( 'Add New Site', 'jetpack-masterbar' ), __( 'Add New Site', 'jetpack-masterbar' ), 'read', 'https://wordpress.com/start?ref=calypso-sidebar', null, 'dashicons-plus-alt' );
-	}
-
-	/**
-	 * Adds site card component.
-	 */
-	public function add_site_card_menu() {
-		$default        = plugins_url( 'globe-icon.svg', __FILE__ );
-		$icon           = get_site_icon_url( 32, $default );
-		$blog_name      = get_option( 'blogname' ) !== '' ? get_option( 'blogname' ) : $this->domain;
-		$is_coming_soon = ( new Status() )->is_coming_soon();
-
-		$badge = '';
-
-		if ( get_option( 'wpcom_is_staging_site' ) ) {
-			$badge .= '<span class="site__badge site__badge-staging">' . esc_html__( 'Staging', 'jetpack-masterbar' ) . '</span>';
-		}
-
-		if ( ( function_exists( '\Private_Site\site_is_private' ) && \Private_Site\site_is_private() ) || $is_coming_soon ) {
-			$badge .= sprintf(
-				'<span class="site__badge site__badge-private">%s</span>',
-				$is_coming_soon ? esc_html__( 'Coming Soon', 'jetpack-masterbar' ) : esc_html__( 'Private', 'jetpack-masterbar' )
-			);
-		}
-
-		$site_card = '
-<div class="site__info">
-	<div class="site__title">%1$s</div>
-	<div class="site__domain">%2$s</div>
-	%3$s
-</div>';
-
-		$site_card = sprintf(
-			$site_card,
-			$blog_name,
-			$this->domain,
-			$badge
-		);
-
-		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
-		add_menu_page( 'site-card', $site_card, 'read', get_home_url(), null, $icon, 1 );
-		add_filter( 'add_menu_classes', array( $this, 'set_site_card_menu_class' ) );
-	}
-
-	/**
-	 * Adds a custom element class and id for Site Card's menu item.
-	 *
-	 * @param array $menu Associative array of administration menu items.
-	 *
-	 * @return array
-	 */
-	public function set_site_card_menu_class( array $menu ) {
-		foreach ( $menu as $key => $menu_item ) {
-			if ( 'site-card' !== $menu_item[3] ) {
-				continue;
-			}
-
-			$classes = ' toplevel_page_site-card';
-
-			// webclip.png is the default on WoA sites. Anything other than that means we have a custom site icon.
-			if ( has_site_icon() && 'https://s0.wp.com/i/webclip.png' !== get_site_icon_url( 512 ) ) {
-				$classes .= ' has-site-icon';
-			}
-
-			$menu[ $key ][4] = $menu_item[4] . $classes;
-			$menu[ $key ][5] = 'toplevel_page_site_card';
-			break;
-		}
-
-		return $menu;
 	}
 
 	/**
@@ -343,20 +265,24 @@ class Atomic_Admin_Menu extends Admin_Menu {
 	 */
 	public function add_jetpack_menu() {
 		// This is supposed to be the same as class-admin-menu but with a different position specified for the Jetpack menu.
-		if ( 'wp-admin' === get_option( 'wpcom_admin_interface' ) ) {
+		if ( $this->use_wp_admin_interface() ) {
 			parent::create_jetpack_menu( 2, false );
 		} else {
 			parent::add_jetpack_menu();
 		}
 
+		$scan_position = $this->get_submenu_item_count( 'jetpack' ) - 1;
+
 		global $submenu;
-		$backup_submenu_label = __( 'Backup', 'jetpack-masterbar' );
-		$submenu_labels       = array_column( $submenu['jetpack'], 3 );
-		$backup_position      = array_search( $backup_submenu_label, $submenu_labels, true );
-		$scan_position        = $backup_position !== false ? $backup_position + 1 : $this->get_submenu_item_count( 'jetpack' ) - 1;
+		if ( isset( $submenu['jetpack'] ) ) {
+			$backup_submenu_label = __( 'Backup', 'jetpack-masterbar' );
+			$submenu_labels       = array_column( $submenu['jetpack'], 3 );
+			$backup_position      = array_search( $backup_submenu_label, $submenu_labels, true );
+			$scan_position        = $backup_position !== false ? $backup_position + 1 : $this->get_submenu_item_count( 'jetpack' ) - 1;
+		}
 
 		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
-		add_submenu_page( 'jetpack', esc_attr__( 'Scan', 'jetpack-masterbar' ), __( 'Scan', 'jetpack-masterbar' ), 'manage_options', 'https://wordpress.com/scan/history/' . $this->domain, null, $scan_position );
+		add_submenu_page( 'jetpack', esc_attr__( 'Scan', 'jetpack-masterbar' ), __( 'Scan', 'jetpack-masterbar' ), 'manage_options', 'https://wordpress.com/scan/' . $this->domain, null, $scan_position );
 
 		/**
 		 * Prevent duplicate menu items that link to Jetpack Backup.
@@ -432,29 +358,20 @@ class Atomic_Admin_Menu extends Admin_Menu {
 	public function add_options_menu() {
 		parent::add_options_menu();
 
-		if ( Jetpack_Plan::supports( 'security-settings' ) ) {
-			add_submenu_page(
-				'options-general.php',
-				esc_attr__( 'Security', 'jetpack-masterbar' ),
-				__( 'Security', 'jetpack-masterbar' ),
-				'manage_options',
-				'https://wordpress.com/settings/security/' . $this->domain,
-				null, // @phan-suppress-current-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
-				2
-			);
-		}
-
-		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
-		add_submenu_page( 'options-general.php', esc_attr__( 'Hosting Configuration', 'jetpack-masterbar' ), __( 'Hosting Configuration', 'jetpack-masterbar' ), 'manage_options', 'https://wordpress.com/hosting-config/' . $this->domain, null, 11 );
-
-		// Page Optimize is active by default on all Atomic sites and registers a Settings > Performance submenu which
-		// would conflict with our own Settings > Performance that links to Calypso, so we hide it it since the Calypso
-		// performance settings already have a link to Page Optimize settings page.
-		$this->hide_submenu_page( 'options-general.php', 'page-optimize' );
+		$has_feature_atomic = function_exists( 'wpcom_site_has_feature' ) && wpcom_site_has_feature( \WPCOM_Features::ATOMIC );
+		add_submenu_page(
+			'options-general.php',
+			$has_feature_atomic ? esc_attr__( 'Server Settings', 'jetpack-masterbar' ) : esc_attr__( 'Hosting Features', 'jetpack-masterbar' ),
+			$has_feature_atomic ? __( 'Server Settings', 'jetpack-masterbar' ) : __( 'Hosting Features', 'jetpack-masterbar' ),
+			'manage_options',
+			$has_feature_atomic ? 'https://wordpress.com/hosting-config/' . $this->domain : 'https://wordpress.com/hosting-features/' . $this->domain,
+			null, // @phan-suppress-current-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
+			11
+		);
 
 		// Hide Settings > Performance when the interface is set to wp-admin.
 		// This is due to these settings are mostly also available in Jetpack > Settings, in the Performance tab.
-		if ( get_option( 'wpcom_admin_interface' ) === 'wp-admin' ) {
+		if ( $this->use_wp_admin_interface() ) {
 			$this->hide_submenu_page( 'options-general.php', 'https://wordpress.com/settings/performance/' . $this->domain );
 		}
 	}
@@ -466,7 +383,7 @@ class Atomic_Admin_Menu extends Admin_Menu {
 		parent::add_tools_menu();
 
 		// Link the Tools menu to Available Tools when the interface is set to wp-admin.
-		if ( get_option( 'wpcom_admin_interface' ) === 'wp-admin' ) {
+		if ( $this->use_wp_admin_interface() ) {
 			// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
 			add_submenu_page( 'tools.php', esc_attr__( 'Available Tools', 'jetpack-masterbar' ), __( 'Available Tools', 'jetpack-masterbar' ), 'edit_posts', 'tools.php', null, 0 );
 		}
@@ -535,56 +452,5 @@ class Atomic_Admin_Menu extends Admin_Menu {
 			$jitm->dismiss( sanitize_text_field( wp_unslash( $_REQUEST['id'] ) ), sanitize_text_field( wp_unslash( $_REQUEST['feature_class'] ) ) );
 		}
 		wp_die();
-	}
-
-	/**
-	 * Adds a notice above each settings page while using the Classic view to indicate
-	 * that the Default view offers more features. Links to the default view.
-	 *
-	 * @return void
-	 */
-	public function add_settings_page_notice() {
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		$current_screen = get_current_screen();
-
-		if ( ! $current_screen instanceof \WP_Screen ) {
-			return;
-		}
-
-		// Show the notice for the following screens and map them to the Calypso page.
-		$screen_map = array(
-			'options-general' => 'general',
-			'options-reading' => 'reading',
-		);
-
-		$mapped_screen = $screen_map[ $current_screen->id ] ?? false;
-
-		if ( ! $mapped_screen ) {
-			return;
-		}
-
-		$switch_url = sprintf( 'https://wordpress.com/settings/%s/%s', $mapped_screen, $this->domain );
-
-		// Close over the $switch_url variable.
-		$admin_notices = function () use ( $switch_url ) {
-			wp_admin_notice(
-				wp_kses(
-					sprintf(
-						// translators: %s is a link to the Calypso settings page.
-						__( 'You are currently using the Classic view, which doesn’t offer the same set of features as the Default view. To access additional settings and features, <a href="%s">switch to the Default view</a>. ', 'jetpack-masterbar' ),
-						esc_url( $switch_url )
-					),
-					array( 'a' => array( 'href' => array() ) )
-				),
-				array(
-					'type' => 'warning',
-				)
-			);
-		};
-
-		add_action( 'admin_notices', $admin_notices );
 	}
 }

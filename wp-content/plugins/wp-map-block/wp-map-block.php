@@ -1,15 +1,16 @@
 <?php
 
 /**
- * Plugin Name: WP Map Block
+ * Plugin Name: WP Map Block by aBlocks
  * Plugin URI: https://academylms.net/wp-map-block
  * Description: Gutenberg Map Block for Google Map and OpenStreet Map build with LeafletJS
- * Author: Academy LMS
- * Author URI: https://academylms.net/
- * Version: 1.4.10
+ * Author: aBlocks - Most Powerful blocks Library
+ * Author URI: https://ablocks.pro/
+ * Version: 2.0.3
  * License: GPL2+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.txt
- *
+ * Text Domain: wp-map-block
+ * Domain Path: /languages/
  */
 
 // Exit if accessed directly.
@@ -36,7 +37,7 @@ if (!class_exists('WPMapBlock')) {
             /**
              * Defines CONSTANTS for Whole plugins.
              */
-            define('WPMAPBLOCK_VERSION', '1.4.10');
+            define('WPMAPBLOCK_VERSION', '2.0.3');
             define('WPMAPBLOCK_PLUGIN_FILE', __FILE__);
             define('WPMAPBLOCK_PLUGIN_BASENAME', plugin_basename(__FILE__));
             define('WPMAPBLOCK_PLUGIN_SLUG', 'wp-map-block');
@@ -46,14 +47,8 @@ if (!class_exists('WPMapBlock')) {
             define('WPMAPBLOCK_ASSETS_URI', WPMAPBLOCK_PLUGIN_ROOT_URI . 'assets/');
         }
 
-        public function init_plugin()
-        {
-            $this->load_textdomain();
-        }
-
         public function dispatch_hook()
         {
-            add_action('init', [$this, 'init_plugin']);
             WPMapBlock\Assets::init();
             WPMapBlock\Block::init();
             WPMapBlock\Migration::init();
@@ -62,10 +57,6 @@ if (!class_exists('WPMapBlock')) {
 			}
         }
 
-        public function load_textdomain()
-        {
-            load_plugin_textdomain('wp-map-block', false, dirname(WPMAPBLOCK_PLUGIN_BASENAME) . '/languages');
-        }
 
         public function activate()
         {

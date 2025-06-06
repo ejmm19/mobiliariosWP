@@ -379,6 +379,11 @@ class Slide extends AbstractRenderableOwner {
                     'class'   => 'n2-ss-slide-thumbnail'
                 ));
 
+                $title = esc_attr($this->getThumbnailTitleDynamic());
+                if ($title) {
+                    $attributes['title'] = $title;
+                }
+
                 $this->html .= Html::image($this->sliderObject->features->optimize->optimizeThumbnail($thumbnail), esc_attr($this->getThumbnailAltDynamic()), $attributes);
             }
         }
@@ -686,6 +691,10 @@ class Slide extends AbstractRenderableOwner {
         return $alt;
     }
 
+    public function getThumbnailTitleDynamic() {
+        return $this->fill($this->parameters->get('thumbnailTitle'));
+    }
+
     public function getLightboxImage() {
         $image = $this->fill($this->parameters->get('ligthboxImage'));
         if (empty($image)) {
@@ -876,11 +885,8 @@ class Slide extends AbstractRenderableOwner {
         }
 
         $attributes['src']     = ResourceTranslator::toUrl($src);
-        $originalThumbnailSize = FastImageSize::getSize($src);
-        if ($originalThumbnailSize) {
-            $attributes['width']  = $originalThumbnailSize['width'];
-            $attributes['height'] = $originalThumbnailSize['height'];
-        }
+        $attributes['width']   = $width;
+        $attributes['height']  = $height;
         $attributes['loading'] = 'lazy';
 
         $attributes = Html::addExcludeLazyLoadAttributes($attributes);
@@ -892,13 +898,10 @@ class Slide extends AbstractRenderableOwner {
             $optimizeThumbnail = $this->sliderObject->params->get('optimize-thumbnail-scale', 0);
 
             if ($optimizeThumbnail) {
-                $optimizedThumbnailUrl  = $this->sliderObject->features->optimize->optimizeThumbnail($attributes['src']);
-                $attributes['src']      = $optimizedThumbnailUrl;
-                $optimizedThumbnailSize = FastImageSize::getSize(ResourceTranslator::urlToResource($optimizedThumbnailUrl));
-                if ($optimizedThumbnailSize) {
-                    $attributes['width']  = $optimizedThumbnailSize['width'];
-                    $attributes['height'] = $optimizedThumbnailSize['height'];
-                }
+                $optimizedThumbnailUrl = $this->sliderObject->features->optimize->optimizeThumbnail($attributes['src']);
+                $attributes['src']     = $optimizedThumbnailUrl;
+                $attributes['width']   = $width;
+                $attributes['height']  = $height;
             }
 
         }

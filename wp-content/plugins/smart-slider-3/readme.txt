@@ -3,8 +3,8 @@ Contributors: nextendweb
 Tags: slider, wordpress slider, image slider, layer slider, responsive slider, slideshow, fullwidth slider, post slider, horizontal slider, vertical slider, photo slider, video slider
 Donate link: https://sites.fastspring.com/nextend/product/smartslider3donate
 Requires at least: 5.0
-Tested up to: 6.5
-Stable tag: 3.5.1.23
+Tested up to: 6.8.1
+Stable tag: 3.5.1.28
 Requires PHP: 7.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -216,6 +216,40 @@ Of course! Smart Slider use protocol relative urls which works fine on http:// a
 9. Enhance your site with our FREE Layer Slider's stylish layers for a better user experience.
 
 == Changelog ==
+
+= 3.5.1.28 - 19. May 2025 =
+* Feature: Accessibility improvements on bullets.
+* Fix: Filtering out unnecessary data from WordPress post generators.
+* Fix: Numpad enter triggers clicking actions too.
+* Fix: Thumbnail images will use their settings given size in their width and height html attributes.
+* Fix: On dynamic slides, the Youtube layer's Cover image field turned its variable into the value.
+
+= 3.5.1.27 - 20. February 2025 =
+* Feature: The latest background animation limitations are hardcoded now, to avoid wrong usage.
+* Feature: Title attribute for slide thumbnail.
+* Fix: At WordPress Posts generators taxonomies with the same name overwrote each other.
+
+= 3.5.1.26 - 9. December 2024 =
+* Fix: Customizer breaks in some cases.
+* Fix: Sliding main animation doesn't moves slides together.
+* Other: Black Friday sale notification removed.
+
+= 3.5.1.25 - 21. November 2024 =
+* Feature: Improved accessibility.
+* Other: Black Friday sale notification added.
+
+= 3.5.1.24 - 30. September 2024 =
+* Feature: Hide layer when variable is not empty option at dynamic slides.
+* Feature: Asset (css, js) injector code improved.
+* Feature: Active thumbnails will get aria-current="true" attribute.
+* Feature: Container element of bullets will get role="group" attribute.
+* Feature: Aria-label option for the container element of bullets.
+* Feature: Blockquote option for Heading layer.
+* Fix: Some background animations are buggy in Chrome, so we rewrote them to use a different animation system.
+* Fix: Post IDs option cleared the given post's cache at every page visit.
+* Fix: WordPress free installer will include unminified js and css files.
+* Fix: Generic font family names won't have quotemarks around them.
+* Fix: Autoplay button didn't have width and height attributes.
 
 = 3.5.1.23 - 11. April 2024 =
 * Fix: At WordPress Posts generator if you have a meta data or ACF data with a name already used as a variable, it can get overwritten.

@@ -7,8 +7,6 @@
 
 namespace Automattic\Jetpack\Publicize\Jetpack_Social_Settings;
 
-use Automattic\Jetpack\Connection\Client;
-use Automattic\Jetpack\Connection\Manager;
 use Automattic\Jetpack\Modules;
 use Automattic\Jetpack\Publicize\Social_Image_Generator\Templates;
 
@@ -16,7 +14,8 @@ use Automattic\Jetpack\Publicize\Social_Image_Generator\Templates;
  * This class is used to get and update Jetpack_Social_Settings.
  * Currently supported features:
  *      - Social Image Generator
- *      - Auto Conversion
+ *      - UTM Settings
+ *      - Social Notes
  */
 class Settings {
 	/**
@@ -24,9 +23,7 @@ class Settings {
 	 *
 	 * @var string
 	 */
-	const OPTION_PREFIX = 'jetpack_social_';
-	// cSpell:ignore AUTOCONVERT
-	const AUTOCONVERT_IMAGES       = 'autoconvert_images';
+	const OPTION_PREFIX            = 'jetpack_social_';
 	const IMAGE_GENERATOR_SETTINGS = 'image_generator_settings';
 
 	const DEFAULT_IMAGE_GENERATOR_SETTINGS = array(
@@ -34,37 +31,84 @@ class Settings {
 		'template' => Templates::DEFAULT_TEMPLATE,
 	);
 
-	const DEFAULT_AUTOCONVERT_IMAGES_SETTINGS = array(
-		'enabled' => true,
+	const UTM_SETTINGS = 'utm_settings';
+
+	const DEFAULT_UTM_SETTINGS = array(
+		'enabled' => false,
+	);
+
+	const NOTES_CONFIG = 'notes_config';
+
+	const DEFAULT_NOTES_CONFIG = array(
+		'append_link' => true,
+	);
+
+	// Legacy named options.
+	const JETPACK_SOCIAL_NOTE_CPT_ENABLED   = 'jetpack-social-note';
+	const JETPACK_SOCIAL_SHOW_PRICING_PAGE  = 'jetpack-social_show_pricing_page';
+	const NOTES_FLUSH_REWRITE_RULES_FLUSHED = 'jetpack_social_rewrite_rules_flushed';
+
+	/**
+	 * Feature flags. Each item has 3 keys because of the naming conventions:
+	 * - flag_name: The name of the feature flag for the option check.
+	 * - feature_name: The name of the feature that enables the feature. Will be checked with Current_Plan.
+	 * - variable_name: The name of the variable that will be used in the front-end.
+	 *
+	 * @var array
+	 */
+	const FEATURE_FLAGS = array(
+		array(
+			'flag_name'     => 'editor_preview',
+			'feature_name'  => 'editor-preview',
+			'variable_name' => 'useEditorPreview',
+		),
+		array(
+			'flag_name'     => 'share_status',
+			'feature_name'  => 'share-status',
+			'variable_name' => 'useShareStatus',
+		),
 	);
 
 	/**
+	 * Whether the actions have been hooked into.
+	 *
+	 * @var bool
+	 */
+	protected static $actions_hooked_in = false;
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+
+		if ( ! self::$actions_hooked_in ) {
+			add_action( 'rest_api_init', array( $this, 'register_settings' ) );
+			add_action( 'admin_init', array( $this, 'register_settings' ) );
+
+			self::$actions_hooked_in = true;
+		}
+	}
+
+	/**
 	 * Migrate old options to the new settings. Previously SIG settings were stored in the
-	 * jetpack_social_image_generator_settings option. Now they are stored in the jetpack_social_settings
-	 * together with the auto conversion settings.
+	 * jetpack_social_image_generator_settings option. Now they are stored in the jetpack_social_settings.
 	 *
 	 * TODO: Work out if this is possible on plugin upgrade
 	 *
 	 * @return void
 	 */
 	private function migrate_old_option() {
-		// Migrating from the old option.
-		$old_auto_conversion_settings = get_option( 'jetpack_social_settings' );
-		if ( ! empty( $old_auto_conversion_settings ) ) {
-			update_option( self::OPTION_PREFIX . self::AUTOCONVERT_IMAGES, array( 'enabled' => ! empty( $old_auto_conversion_settings['image'] ) ) );
+		// Delete the old options if they exist.
+		if ( get_option( 'jetpack_social_settings' ) ) {
 			delete_option( 'jetpack_social_settings' );
 		}
-		// Checking if the new option is valid.
-		$auto_conversion_settings = get_option( self::OPTION_PREFIX . self::AUTOCONVERT_IMAGES );
-		// If the option is not set, we don't need to delete it.
-		// If it is set, but it is not an array or it does not have the enabled key, we delete it.
-		if ( false !== $auto_conversion_settings && ( ! is_array( $auto_conversion_settings ) || ! isset( $auto_conversion_settings['enabled'] ) ) ) {
-			delete_option( self::OPTION_PREFIX . self::AUTOCONVERT_IMAGES );
+		if ( get_option( 'jetpack_social_autoconvert_images' ) ) {
+			delete_option( 'jetpack_social_autoconvert_images' );
 		}
 
 		$sig_settings = get_option( 'jetpack_social_image_generator_settings' );
 		// If the option is not set, we don't need to migrate.
-		if ( $sig_settings === false ) {
+		if ( false === $sig_settings ) {
 			return;
 		}
 
@@ -96,14 +140,43 @@ class Settings {
 	 * @return void
 	 */
 	public function register_settings() {
+
 		register_setting(
 			'jetpack_social',
-			self::OPTION_PREFIX . self::AUTOCONVERT_IMAGES,
+			self::OPTION_PREFIX . self::IMAGE_GENERATOR_SETTINGS,
 			array(
-				'default'      => array(
-					'enabled' => true,
-				),
 				'type'         => 'object',
+				'default'      => array(
+					'enabled'  => false,
+					'template' => Templates::DEFAULT_TEMPLATE,
+				),
+				'show_in_rest' => array(
+					'schema' => array(
+						'type'       => 'object',
+						'properties' => array(
+							'enabled'          => array(
+								'type' => 'boolean',
+							),
+							'template'         => array(
+								'type' => 'string',
+							),
+							'default_image_id' => array(
+								'type' => 'number',
+							),
+						),
+					),
+				),
+			)
+		);
+
+		register_setting(
+			'jetpack_social',
+			self::OPTION_PREFIX . self::UTM_SETTINGS,
+			array(
+				'type'         => 'boolean',
+				'default'      => array(
+					'enabled' => false,
+				),
 				'show_in_rest' => array(
 					'schema' => array(
 						'type'       => 'object',
@@ -119,22 +192,49 @@ class Settings {
 
 		register_setting(
 			'jetpack_social',
-			self::OPTION_PREFIX . self::IMAGE_GENERATOR_SETTINGS,
+			self::JETPACK_SOCIAL_SHOW_PRICING_PAGE,
+			array(
+				'type'         => 'boolean',
+				'default'      => true,
+				'show_in_rest' => array(
+					'schema' => array(
+						'type' => 'boolean',
+					),
+				),
+			)
+		);
+
+		register_setting(
+			'jetpack_social',
+			self::JETPACK_SOCIAL_NOTE_CPT_ENABLED,
+			array(
+				'type'         => 'boolean',
+				'default'      => false,
+				'show_in_rest' => array(
+					'schema' => array(
+						'type' => 'boolean',
+					),
+				),
+			)
+		);
+
+		register_setting(
+			'jetpack_social',
+			self::OPTION_PREFIX . self::NOTES_CONFIG,
 			array(
 				'type'         => 'object',
-				'default'      => array(
-					'enabled'  => false,
-					'template' => Templates::DEFAULT_TEMPLATE,
-				),
+				'default'      => self::DEFAULT_NOTES_CONFIG,
 				'show_in_rest' => array(
 					'schema' => array(
 						'type'       => 'object',
+						'context'    => array( 'view', 'edit' ),
 						'properties' => array(
-							'enabled'  => array(
+							'append_link' => array(
 								'type' => 'boolean',
 							),
-							'template' => array(
+							'link_format' => array(
 								'type' => 'string',
+								'enum' => array( 'full_url', 'shortlink', 'permashortcitation' ),
 							),
 						),
 					),
@@ -143,6 +243,51 @@ class Settings {
 		);
 
 		add_filter( 'rest_pre_update_setting', array( $this, 'update_settings' ), 10, 3 );
+	}
+
+	/**
+	 * Get the image generator settings.
+	 *
+	 * @return array
+	 */
+	public function get_image_generator_settings() {
+		return get_option( self::OPTION_PREFIX . self::IMAGE_GENERATOR_SETTINGS, self::DEFAULT_IMAGE_GENERATOR_SETTINGS );
+	}
+
+	/**
+	 * Get if the UTM params is enabled.
+	 *
+	 * @return array
+	 */
+	public function get_utm_settings() {
+		return get_option( self::OPTION_PREFIX . self::UTM_SETTINGS, self::DEFAULT_UTM_SETTINGS );
+	}
+
+	/**
+	 * Get the social notes config.
+	 *
+	 * @return array The social notes config.
+	 */
+	public function get_social_notes_config() {
+		return get_option( self::OPTION_PREFIX . self::NOTES_CONFIG, self::DEFAULT_NOTES_CONFIG );
+	}
+
+	/**
+	 * Check if the pricing page should be displayed.
+	 *
+	 * @return bool
+	 */
+	public static function should_show_pricing_page() {
+		return (bool) get_option( self::JETPACK_SOCIAL_SHOW_PRICING_PAGE, true );
+	}
+
+	/**
+	 * Get if the social notes feature is enabled.
+	 *
+	 * @return bool
+	 */
+	public function is_social_notes_enabled() {
+		return (bool) get_option( self::JETPACK_SOCIAL_NOTE_CPT_ENABLED, false );
 	}
 
 	/**
@@ -156,18 +301,15 @@ class Settings {
 		$this->migrate_old_option();
 
 		$settings = array(
-			'autoConversionSettings'       => get_option( self::OPTION_PREFIX . self::AUTOCONVERT_IMAGES, self::DEFAULT_AUTOCONVERT_IMAGES_SETTINGS ),
-			'socialImageGeneratorSettings' => get_option( self::OPTION_PREFIX . self::IMAGE_GENERATOR_SETTINGS, self::DEFAULT_IMAGE_GENERATOR_SETTINGS ),
+			'socialImageGeneratorSettings' => $this->get_image_generator_settings(),
 		);
 
 		// The feature cannot be enabled without Publicize.
 		if ( ! ( new Modules() )->is_active( 'publicize' ) ) {
-			$settings['autoConversionSettings']['enabled']       = false;
 			$settings['socialImageGeneratorSettings']['enabled'] = false;
 		}
 
 		if ( $with_available ) {
-			$settings['autoConversionSettings']['available']       = $this->is_auto_conversion_available();
 			$settings['socialImageGeneratorSettings']['available'] = $this->is_sig_available();
 		}
 
@@ -176,67 +318,12 @@ class Settings {
 
 	/**
 	 * Get the initial state.
+	 * Deprecated method, stub left here to avoid fatal.
+	 *
+	 * @deprecated 0.62.0
 	 */
 	public function get_initial_state() {
-		global $publicize;
-
-		$settings = $this->get_settings( true );
-
-		$settings['useAdminUiV1'] = false;
-
-		$settings['is_publicize_enabled'] = false;
-		$settings['hasPaidFeatures']      = false;
-
-		$connection = new Manager();
-
-		if ( ( new Modules() )->is_active( 'publicize' ) && $connection->has_connected_user() ) {
-			$settings['useAdminUiV1']   = $publicize->use_admin_ui_v1();
-			$settings['connectionData'] = array(
-				'connections' => $publicize->get_all_connections_for_user(),
-				'adminUrl'    => esc_url_raw( $publicize->publicize_connections_url( 'jetpack-social-connections-admin-page' ) ),
-				'services'    => $this->get_services(),
-			);
-
-			$settings['is_publicize_enabled'] = true;
-			$settings['hasPaidFeatures']      = $publicize->has_paid_features();
-		} else {
-			$settings['connectionData'] = array(
-				'connections' => array(),
-			);
-		}
-
-		$settings['connectionRefreshPath'] = ! empty( $settings['useAdminUiV1'] ) ? 'jetpack/v4/publicize/connections?test_connections=1' : '/jetpack/v4/publicize/connection-test-results';
-
-		return $settings;
-	}
-
-	/**
-	 * Get the list of supported Publicize services.
-	 *
-	 * @return array List of external services and their settings.
-	 */
-	public function get_services() {
-		$site_id = Manager::get_site_id();
-		if ( is_wp_error( $site_id ) ) {
-			return array();
-		}
-		$path     = sprintf( '/sites/%d/external-services', $site_id );
-		$response = Client::wpcom_json_api_request_as_user( $path );
-		if ( is_wp_error( $response ) ) {
-			return array();
-		}
-		$body = json_decode( wp_remote_retrieve_body( $response ) );
-
-		$services = $body->services ?? array();
-
-		return array_values(
-			array_filter(
-				(array) $services,
-				function ( $service ) {
-					return isset( $service->type ) && 'publicize' === $service->type;
-				}
-			)
-		);
+		return array();
 	}
 
 	/**
@@ -249,32 +336,40 @@ class Settings {
 	 * @return bool
 	 */
 	public function update_settings( $updated, $name, $value ) {
-		if ( self::OPTION_PREFIX . self::AUTOCONVERT_IMAGES === $name ) {
-			return $this->update_auto_conversion_setting( $value );
-		}
 
+		// Social Image Generator.
 		if ( self::OPTION_PREFIX . self::IMAGE_GENERATOR_SETTINGS === $name ) {
 			return $this->update_social_image_generator_settings( $value );
 		}
-		return $updated;
-	}
 
-	/**
-	 * Update the auto conversion settings.
-	 *
-	 * @param array $new_setting The new settings.
-	 *
-	 * @return bool
-	 */
-	public function update_auto_conversion_setting( $new_setting ) {
-		$this->migrate_old_option();
-		$auto_conversion_settings = get_option( self::OPTION_PREFIX . self::AUTOCONVERT_IMAGES );
+		// UTM Settings.
+		if ( self::OPTION_PREFIX . self::UTM_SETTINGS === $name ) {
+			$current_utm_settings = $this->get_utm_settings();
 
-		if ( empty( $auto_conversion_settings ) || ! is_array( $auto_conversion_settings ) ) {
-			$auto_conversion_settings = self::DEFAULT_AUTOCONVERT_IMAGES_SETTINGS;
+			if ( empty( $current_utm_settings ) || ! is_array( $current_utm_settings ) ) {
+				$current_utm_settings = self::DEFAULT_UTM_SETTINGS;
+			}
+
+			return update_option( self::OPTION_PREFIX . self::UTM_SETTINGS, array_replace_recursive( $current_utm_settings, $value ) );
 		}
 
-		return update_option( self::OPTION_PREFIX . self::AUTOCONVERT_IMAGES, array_replace_recursive( $auto_conversion_settings, $new_setting ) );
+		// Social Notes.
+		if ( self::JETPACK_SOCIAL_NOTE_CPT_ENABLED === $name ) {
+			// Delete this option, so the rules get flushed in maybe_flush_rewrite_rules when the CPT is registered.
+			delete_option( self::NOTES_FLUSH_REWRITE_RULES_FLUSHED );
+			return update_option( self::JETPACK_SOCIAL_NOTE_CPT_ENABLED, (bool) $value );
+		}
+		if ( self::OPTION_PREFIX . self::NOTES_CONFIG === $name ) {
+			$old_config = $this->get_social_notes_config();
+			$new_config = array_merge( $old_config, $value );
+			return update_option( self::OPTION_PREFIX . self::NOTES_CONFIG, $new_config );
+		}
+
+		if ( self::JETPACK_SOCIAL_SHOW_PRICING_PAGE === $name ) {
+			return update_option( self::JETPACK_SOCIAL_SHOW_PRICING_PAGE, (int) $value );
+		}
+
+		return $updated;
 	}
 
 	/**
@@ -311,23 +406,6 @@ class Settings {
 	}
 
 	/**
-	 * Check if the auto conversion feature is available.
-	 *
-	 * @param string $type Whether video or image.
-
-	 * @return bool True if available, false otherwise.
-	 */
-	public function is_auto_conversion_available( $type = 'image' ) {
-		global $publicize;
-
-		if ( ! $publicize ) {
-			return false;
-		}
-
-		return $publicize->has_social_auto_conversion_feature( $type );
-	}
-
-	/**
 	 * Get the default template.
 	 *
 	 * @return string
@@ -339,5 +417,24 @@ class Settings {
 			$sig_settings = self::DEFAULT_IMAGE_GENERATOR_SETTINGS;
 		}
 		return $sig_settings['template'];
+	}
+
+	/**
+	 * Get the default image ID.
+	 *
+	 * @return int
+	 */
+	public function sig_get_default_image_id() {
+		$this->migrate_old_option();
+		$sig_settings = get_option( self::OPTION_PREFIX . self::IMAGE_GENERATOR_SETTINGS );
+		if ( empty( $sig_settings ) || ! is_array( $sig_settings ) ) {
+			return 0;
+		}
+
+		if ( isset( $sig_settings['default_image_id'] ) ) {
+			return $sig_settings['default_image_id'];
+		}
+
+		return 0;
 	}
 }

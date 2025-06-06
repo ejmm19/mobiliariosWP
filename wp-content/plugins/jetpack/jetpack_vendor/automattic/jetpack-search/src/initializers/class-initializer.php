@@ -122,7 +122,7 @@ class Initializer {
 		/**
 		 * Filter whether classic search should be enabled. By this stage, search module would be enabled already.
 		 *
-		 * @since Jetpack $$next_version$$
+		 * @since 0.39.6
 		 * @param boolean initial value whether classic search is enabled.
 		 * @param boolean filtered result whether classic search is enabled.
 		 */
@@ -185,7 +185,8 @@ class Initializer {
 		if ( ! apply_filters( 'jetpack_search_init_classic_search', true ) ) {
 			return;
 		}
-		Classic_Search::initialize( $blog_id );
+		Inline_Search::get_instance_maybe_fallback_to_classic( $blog_id );
+
 		return true;
 	}
 

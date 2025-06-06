@@ -7,6 +7,7 @@
 
 namespace Automattic\Jetpack\Sync;
 
+use Automattic\Jetpack\Connection\Manager;
 use Automattic\Jetpack\Connection\Urls;
 use Automattic\Jetpack\Constants;
 use Automattic\Jetpack\Modules as Jetpack_Modules;
@@ -666,7 +667,7 @@ class Functions {
 	/**
 	 * Return the list of active Jetpack modules.
 	 *
-	 * @since $$next_version$$
+	 * @since 1.34.0
 	 *
 	 * @return array
 	 */
@@ -677,7 +678,7 @@ class Functions {
 	/**
 	 * Return a list of PHP modules that we want to track.
 	 *
-	 * @since $$next_version$$
+	 * @since 1.50.0
 	 *
 	 * @return array
 	 */
@@ -708,5 +709,72 @@ class Functions {
 		}
 
 		return $enabled_extensions;
+	}
+
+	/**
+	 * Return the list of active connected Jetpack plugins.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return array
+	 */
+	public static function get_jetpack_connection_active_plugins() {
+		return ( new Manager() )->get_connected_plugins();
+	}
+
+	/**
+	 * Return the list of active sync modules.
+	 *
+	 * @since 3.6.0
+	 *
+	 * @return array
+	 */
+	public static function get_jetpack_sync_active_modules() {
+
+		/** This filter is documented in projects/packages/sync/src/class-modules.php */
+		$modules = apply_filters( 'jetpack_sync_modules', Modules::DEFAULT_SYNC_MODULES );
+		$modules = array_unique( $modules );
+		$modules = array_map( 'wp_normalize_path', $modules );
+		return $modules;
+	}
+
+	/**
+	 * Return the list of Jetpack package versions.
+	 *
+	 * @since 4.11.1
+	 *
+	 * @return array
+	 */
+	public static function get_jetpack_package_versions() {
+		return apply_filters( 'jetpack_package_versions', array() );
+	}
+
+	/**
+	 * Get the environment type with support for 'sandbox'.
+	 *
+	 * Extends WordPress core's wp_get_environment_type() to support additional
+	 * environment types like 'sandbox'.
+	 *
+	 * @return string Environment type (local, development, staging, production, or sandbox).
+	 */
+	public static function get_environment_type() {
+		$env_type = '';
+
+		if ( function_exists( 'getenv' ) ) {
+			$has_env = getenv( 'WP_ENVIRONMENT_TYPE' );
+			if ( false !== $has_env ) {
+				$env_type = $has_env;
+			}
+		}
+
+		if ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE ) {
+			$env_type = WP_ENVIRONMENT_TYPE;
+		}
+
+		if ( 'sandbox' === $env_type ) {
+			return 'sandbox';
+		}
+
+		return wp_get_environment_type();
 	}
 }

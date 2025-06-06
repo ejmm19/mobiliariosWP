@@ -1,10 +1,10 @@
 === Jetpack - WP Security, Backup, Speed, & Growth ===
-Contributors: automattic, adamkheckler, adrianmoldovanwp, aduth, akirk, allendav, alternatekev, andy, annamcphee, annezazu, apeatling, arcangelini, arsihasi, azaozz, barry, batmoo, beaulebens, bindlegirl, biskobe, bjorsch, blobaugh, brbrr, brileyhooper, cainm, cena, cfinke, cgastrell, chaselivingston, chellycat, clickysteve, csonnek, danielbachhuber, daniloercoli, davoraltman, delawski, designsimply, dkmyta, dllh, drawmyface, dsmart, jwidavid, dzver, ebinnion, egregor, eliorivero, enej, eoigal, erania-pinnera, ethitter, fgiannar, gcorne, georgestephanis, gibrown, goldsounds, hew, hugobaeta, hypertextranch, iammattthomas, iandunn, joen, jblz, jeffgolenski, jeherve, jenhooks, jenia, jessefriedman, jgs, jkudish, jmdodd, joanrho, johnjamesjacoby, jshreve, kbrownkd, keoshi, koke, kraftbj, lancewillett, leogermani, lhkowalski, lschuyler, macmanx, martinremy, matt, mattwiebe, matveb, maverick3x6, mcsf, mdawaffe, mdbitz, MichaelArestad, migueluy, miguelxavierpenha, mikeyarce, mkaz, nancythanki, nickmomrik, njweller, nunyvega, obenland, oskosk, pento, professor44, rachelsquirrel, rdcoll, renatoagds, retrofox, richardmtl, richardmuscat, robertbpugh, roccotripaldi, ryancowles, samhotchkiss, samiff, scarstocea, scottsweb, sdixon194, sdquirk, sermitr, simison, stephdau, thehenridev, tmoorewp, tyxla, Viper007Bond, westi, williamvianas, wpkaren, yoavf, zinigor
+Contributors: automattic, adamkheckler, adrianmoldovanwp, aduth, akirk, allendav, alternatekev, andy, annamcphee, annezazu, apeatling, arcangelini, arsihasi, azaozz, barry, batmoo, beaulebens, bindlegirl, biskobe, bjorsch, blobaugh, brbrr, brileyhooper, cainm, cena, cfinke, cgastrell, chaselivingston, chellycat, clickysteve, csonnek, danielbachhuber, daniloercoli, davoraltman, delawski, designsimply, dkmyta, dllh, drawmyface, dsmart, dun2mis, dzver, ebinnion, egregor, eliorivero, enej, eoigal, erania-pinnera, ethitter, fgiannar, gcorne, georgestephanis, gibrown, goldsounds, hew, hugobaeta, hypertextranch, iammattthomas, iandunn, joen, jblz, jeffgolenski, jeherve, jenhooks, jenia, jessefriedman, jgs, jkudish, jmdodd, joanrho, johnjamesjacoby, jshreve, kbrownkd, keoshi, koke, kraftbj, lancewillett, leogermani, lhkowalski, lschuyler, macmanx, martinremy, matt, mattwiebe, matveb, maverick3x6, mcsf, mdawaffe, mdbitz, MichaelArestad, migueluy, miguelxavierpenha, mikeyarce, mkaz, nancythanki, nickmomrik, njweller, nunyvega, obenland, oskosk, pento, professor44, rachelsquirrel, rdcoll, renatoagds, retrofox, richardmtl, richardmuscat, robertbpugh, roccotripaldi, ryancowles, samhotchkiss, samiff, scarstocea, scottsweb, sdixon194, sdquirk, sermitr, simison, stephdau, thehenridev, tmoorewp, tyxla, Viper007Bond, westi, williamvianas, wpkaren, yoavf, zinigor
 Tags: Security, backup, malware, scan, performance
-Stable tag: 13.6
-Requires at least: 6.4
-Requires PHP: 7.0
-Tested up to: 6.6
+Stable tag: 14.7
+Requires at least: 6.7
+Requires PHP: 7.2
+Tested up to: 6.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,7 +58,7 @@ Get blazing fast site speed with Jetpack. Jetpack’s free CDN (content delivery
 = POWERFUL TOOLS FOR GROWTH =
 Create and customize your WordPress site, optimize it for visitors and revenue, and enjoy watching your stats tick up. Build it, share it, and watch it grow.
 
-* Auto publish blog posts and products to social media by simply using our tools to connect to Facebook, Tumblr, Mastodon, and LinkedIn.
+* Auto publish blog posts and products to social media by simply using our tools to connect to Facebook, Bluesky, Threads, Tumblr, Mastodon, LinkedIn, and Nextdoor.
 * Easily share Instagram posts on your pages and blog posts.
 * Collect a payment or donation, sell a product, service, or membership with simple integrations with PayPal and Stripe.
 * Grow traffic with SEO tools for Google, Bing, Facebook, and WordPress.com. XML sitemap created automatically.
@@ -114,7 +114,7 @@ Jetpack is updated monthly to ensure seamless integration with top WordPress plu
 * Built for WooCommerce: Jetpack and WooCommerce are both made by Automattic. Backup, Scan, Anti-spam, integrate perfectly for Woo / eComm stores.
 * Jetpack is fully compatible with v2.0 of the official AMP plugin for WordPress.
 * Better understand your customers and marketing with Google Analytics (GA) integration.
-* Social media platforms: Instagram, Facebook, Tumblr, LinkedIn.
+* Social media platforms: Instagram, Facebook, Tumblr, LinkedIn, Threads, Bluesky, Nextdoor.
 * Simple Blocks to customize your site: Pinterest, Whatsapp, Podcast player, GIFs, maps, tiled gallery, slideshow.
 * Payment processors: easily collect payments or donations and sell products through Stripe and PayPal.
 * Site speed and performance plugins: Works great with WP Super Cache by Automattic and Cloudflare.
@@ -303,7 +303,7 @@ Automattic actively develops [Jetpack Boost](https://wordpress.org/plugins/jetpa
 
 = What version of PHP do I need? =
 
-Sites must be built on PHP 7.0 or greater, but Jetpack always supports the latest version of PHP.
+Sites must be built on PHP 7.2 or greater, but Jetpack always supports the latest version of PHP.
 
 = Can Jetpack help my site comply with GDPR? =
 
@@ -326,29 +326,46 @@ Jetpack Backup can do a full website migration to a new host, migrate theme file
 
 
 == Changelog ==
-### 13.6 - 2024-07-02
+### 14.7 - 2025-06-03
 #### Enhancements
-- AI Assistant: Hide input when user types on extended block.
-- Goodreads Block: provide support for additional profile URLs.
-- Newsletter: Add ability to manage the newsletter byline appearance.
-- Newsletter: Adding a new toggle to control the newsletter author line.
-- Newsletter: Email replies can become comments on your blog.
-- Social: Add Threads preview to Social Previews.
-- Tiled Gallery: Increase accessibility of Tiled Gallery carousel images.
+- Forms: Add 33% width option to fields and buttons.
+- Forms: Add Google Drive to integrations modal.
+- Forms: Add Google to form integrations endpoint.
+- Forms: Add Integration screen content.
+- Forms: Move responses menu item from Feedback > Forms to Jetpack > Forms.
+- Forms: Move Salesforce to block modal.
+- Forms: Remove Salesforce Form variation.
+- Forms: Replace Landing page with About page.
+- Forms: Update form responses tabs.
+- Forms: Update the email template for feedback responses.
+- My Jetpack: Optimize the images for onboarding slider for faster page load.
+- Search: Highlight search term in returned search results.
+- Social: Add option to add default image to Social Image Generator.
 
 #### Improved compatibility
-- Block Editor: Ensure that no Jetpack features are displayed in the site editor's sidebar when not necessary.
-- General: indicate compatibility with the upcoming version of WordPress - 6.6.
-- Offline Mode: do not display Jetpack's outbound SSL notice when in Offline mode.
+- Blocks: Update `useResizeObserver` hook usage to meet new API expectations.
+- Crowdsignal: Prevent warnings in error logs when viewing ratings via legacy shortcodes on archive pages.
+- Endpoints: Add checks within the v1.1 post update endpoint to ensure values are defined.
+- Remove Skype since the service no longer exists.
+- Sharing buttons: Prevent PHP warnings in some scenarios, ensuring we only check the post title and ID if posts exist.
+- Sharing service: Prevent warnings in error logs when certain keys are not set.
+- Sitemaps: Disable XMLWriter by default unless enabled by a filter.
 
 #### Bug fixes
-- AI Assistant: Disable extensions when AI Assistant block is hidden.
-- External Media: Do not display External Media options in the Caption edit field.
-- External media: Ensure connect URL has the correct blog ID and verification values.
-- Like block: Fix editor styling.
-- Publicize: Fix a race condition with refreshing the active social connections.
-- Slideshow: Ensure whole block is selectable in the editor.
-- User Content Link Tracking: Check domain before redirecting to subscribe.wordpress.com.
+- AI Chat & Donations blocks: Ensure that all metadata is properly attached to the blocks in the block editor.
+- Carousel: Do not display comment form when comments are closed for a specific media attachment.
+- Fix text wrapping on the stats column heading in non-English languages.
+- Forms: Fix a bug preventing responses dashboard from loading (blank screen).
+- Forms: Fix Akismet spam URL.
+- Forms: Fix double scrollbars for responses.
+- Forms: Preserve responses query parameters.
+- Forms: Show upload progress in File Upload field when reduced motion is enabled.
+- Jetpack: Fix redirect URL on frontend for upgrade nudge.
+- My Jetpack: Fix Onboarding UI responsiveness at 600px.
+- My Jetpack: Fix readability of license activation button on hover.
+- My Jetpack: Hide backup failure notice when backups are deactivated.
+- Open Graph: Prevent PHP warnings when embedding some Vimeo videos.
+- Social: Ensure images load in connections management when concatenating JS.
 
 --------
 

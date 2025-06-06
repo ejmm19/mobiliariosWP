@@ -16,9 +16,11 @@ class Product
         $argsForCategory = [];
         if (!empty($category)) {
             $argsForCategory = [
-                        'taxonomy' => 'category',
-                        'field' => 'slug',
-                        'terms' => 'credenzas'
+                [
+                    'taxonomy' => 'category',
+                    'field' => 'slug',
+                    'terms' => $category,
+                ]
             ];
         }
         $args = [
@@ -26,7 +28,7 @@ class Product
             'posts_per_page' => $posts_per_page,
             'order' => 'ASC',
             'orderby' => 'title',
-            'tax_query' => $argsForCategory
+            'tax_query' => !empty($argsForCategory) ? $argsForCategory : [],
         ];
         return new WP_Query($args);
     }
@@ -94,16 +96,33 @@ class Product
      */
     public function getCarousel($attr): string
     {
-        $elements = match ($attr['type']) {
+        $type = $attr['type'] ?? null; // Verifica si 'type' está definido, de lo contrario asigna null
+        $elements = match ($type) {
             'categories' => $this->getCategoriesPublicData(),
             default => $this->getProductPublicData(),
         };
         $items = json_encode($elements);
-        $contents = file_get_contents(get_template_directory_uri().'/elements/html/carousel-products.html');
+        $contents = file_get_contents(get_template_directory() . '/elements/html/carousel-products.html'); // Cambia a ruta del sistema de archivos
         return str_replace("[elements]", $items, $contents);
     }
 
-    private function getCategoriesPublicData(): array
+    public function getProductListByCategory($category): string
+    {
+        $type = $attr['type'] ?? null; // Verifica si 'type' está definido, de lo contrario asigna null
+        $elements = match ($type) {
+            'categories' => $this->getCategoriesPublicData(),
+            default => $this->getProductPublicData(),
+        };
+        $items = json_encode($elements);
+        $contents = file_get_contents(get_template_directory() . '/elements/html/product-list.html');
+        $nonce = wp_create_nonce('mf_ajax_nonce');
+        $ajax_url = admin_url('admin-ajax.php');
+        $contents = str_replace("ajax_url", $ajax_url, $contents);
+        $contents = str_replace("nonce", $nonce, $contents);
+        return str_replace("[elements]", $items, $contents);
+    }
+
+    public function getCategoriesPublicData(): array
     {
         $args = array(
             'taxonomy' => 'category',
@@ -118,10 +137,17 @@ class Product
             $custom_fields = get_fields($category);
             $categories[] = [
                 'name' => $category->name,
-                'image' => /*!empty($custom_fields['imagen']) ? $custom_fields['imagen'] :*/ 'https://mobiliarios-wp.test/wp-content/uploads/2024/07/drawer-units-10711.avif',
+                'image' => !empty($custom_fields['category_image']) ? $custom_fields['category_image'] : './wp-content/uploads/2024/07/drawer-units-10711.avif',
                 'link' => $category->slug,
+                'position' => !empty($custom_fields['position']) ? (int)$custom_fields['position'] : PHP_INT_MAX, // Asigna un valor alto si no está definido
             ];
         }
+
+        // Ordenar por el campo 'position'
+        usort($categories, function ($a, $b) {
+            return $a['position'] <=> $b['position'];
+        });
+
         return $categories;
     }
 }

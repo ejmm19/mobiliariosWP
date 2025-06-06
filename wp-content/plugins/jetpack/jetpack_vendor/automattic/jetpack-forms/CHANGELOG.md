@@ -5,6 +5,552 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.56.0] - 2025-06-02
+### Added
+- Add tracking pixel to form submission emails to know if emails are being opened (no user info is sent). [#43629]
+- Add events to Forms dashboard pages. [#43686]
+- Add page to announce that forms moved to Jetpack > Forms menu. [#43620]
+- Reinstate sending submission email when user moves response from spam to inbox. [#43559]
+- Use translated screenshot on dashboard migration page. [#43693] [#43707]
+
+### Changed
+- Add mobile-friendly styles and screenshot on Forms migration page. [#43664]
+- Add context to About tab translation. [#43708]
+- Add translation hint for Trash terminology. [#43704]
+- Change action button placement on mobile. [#43605]
+- Create a new page instead of post when creating a new form from dashboard. [#43668]
+- Create form patterns from About page. [#43608]
+- Enable feature filters by default to migrate forms dashboard page and menu. [#43705]
+- Indicate in sidebar if no integrations enabled. [#43547]
+- Update inbox header to use latest component features. [#43680]
+- Update styles, labels and copy edits for integrations modal and tab. [#43666]
+- Update package dependencies. [#43712]
+
+### Removed
+- Disable default listing UI for Feedback post types if the menu item is removed. [#43657]
+
+### Fixed
+- Contact Form: Use `wp_kses_post` instead of `esc_html` when rendering legend to allow safe HTML in fieldset legends. [#43639]
+- File Upload field: Show upload progress when reduced motion is enabled. [#43628]
+- Remove dependency from `jetpack-mu-wpcom-plugin`. [#43627]
+
+## [0.55.0] - 2025-05-26
+### Added
+- Forms: Add Create Form button to dashboard header. [#43529]
+- Forms: Add feature filter flags and code for moving submenu item from Feedback > Forms responses to Jetpack > Forms. [#43295]
+- Forms: Add Integration screen content. [#43530]
+- Forms: Add integration tab with feature flag. [#43502]
+
+### Changed
+- Forms: Address styles design on integrations tabs and modal. [#43576]
+- Update package dependencies. [#43516] [#43578]
+
+### Fixed
+- Fixed admin notice showing on all screens instead of only forms classic view. [#43582]
+- Forms: Apply max-width on Salesforce ID input. [#43543]
+- Forms: Fix Akismet spam URL. [#43542]
+- Forms: Remove the ability to upload multiple files at using the same file upload field. This field is not yet released. [#43555]
+
+## [0.54.0] - 2025-05-19
+### Added
+- Add Google Drive to integrations modal. [#43479]
+
+### Changed
+- Get Google status with new `useIntegrationStatus` hook. [#43463]
+- Update Google Sheets icon. [#43501]
+- Update Salesforce icons. [#43487]
+- Dashboard: Fix container height to consistently fit on view. [#43485]
+- Update package dependencies. [#43398]
+
+## [0.53.0] - 2025-05-15
+### Added
+- Add 33% width option to fields and button. [#43417]
+
+### Changed
+- Add Google to form integrations endpoint. [#43453]
+- Change copy of upsell banner for File Upload block. [#43395]
+- Simplify dropzone area and settings for File Upload field. [#43471]
+
+### Fixed
+- Fix a bug preventing responses dashboard from loading (blank screen). [#43460]
+- Fix double scrollbars for responses. [#43462]
+- Fix Google Connect button styling. [#43440]
+
+## [0.52.0] - 2025-05-12
+### Added
+- Add Typescript support. [#43394]
+- Unify icons and add Creative Mail to About page. [#43414]
+- Update the email template for feedback responses. [#43323]
+
+### Changed
+- Move Salesforce to block modal. [#43297]
+- Replace Landing page with About page. [#43361]
+- Update form responses tabs. [#43358]
+- Update list of files distributed in stable version of the package. [#43310]
+- Update package dependencies. [#43400]
+
+### Removed
+- Remove Salesforce Form variation. [#43419]
+
+### Fixed
+- Adjust export button mobile styles. [#43381]
+- Fix block modal mobile styling. [#43422]
+- Fix responses toggle background. [#43377]
+- Preserve responses query parameters. [#43372]
+- Prevent submenu from interfering with Crowdsignal/Polldaddy submenu items. [#43385]
+- Show export button only on responses tab. [#43374]
+- Improve Success and Email messages. [#43380]
+- Remove unused `block.json` for the File field to prevent it from showing in the WP.org blocks list. [#43387]
+
+## [0.51.0] - 2025-05-05
+### Added
+- File Upload field: Add registration with plan check. [#43177]
+- Add tabs to forms dashboard. [#43280]
+
+### Changed
+- Don't show colon after question mark for form labels. [#43307]
+- Polish integration modal style and copy. [#43252]
+- Remove default spacing from variations. [#43342]
+- Use WordPress.com specific URLs at about page. [#43341]
+- Update package dependencies. [#43314] [#43326] [#43350] [#43355]
+
+### Deprecated
+- Drop WP 6.6 support in Inbox by using new format for useResizeObserver. [#43343]
+
+### Fixed
+- Ensure forms modal handles services. [#43336]
+- Fix Google Drive connection button style and streamline connection. [#43245]
+- Linting: Address final rules in WordPress Stylelint config. [#43296]
+- Linting: Do additional stylesheet cleanup. [#43247]
+
+## [0.50.0] - 2025-04-28
+### Added
+- Add integration status to block sidebar. [#43178]
+- Add tests for integrations endpoint. [#43236]
+- Add Tracks to block modal. [#43174]
+
+### Changed
+- Always show "View action" in inbox. [#43185]
+- Have integrations endpoint return array instead of object. [#43183]
+- Redirect from `/landing` to `/responses` if there are form responses. [#42854]
+- Update email HTML template. [#43093]
+- Use componentry instead of CSS for some elements in integrations modal. [#43117]
+
+### Removed
+- Remove unused integrations code. [#43211]
+
+### Fixed
+- Avoid overwriting form values when field names are repeated. [#43140]
+- File Field: Improve code style in interactivity layer. [#43201]
+- Fix empty file field error case. [#43173]
+- Fix max file size upload check. [#43142]
+- Fix toggle deprecation warning. [#43218]
+- Linting: Fix more Stylelint violations. [#43213]
+- Linting: Remove outdated vendor prefixes in stylesheets. [#43219]
+
+## [0.49.0] - 2025-04-21
+### Added
+- Add new integrations setup modal. [#43057]
+
+### Changed
+- Block registration: Do not display the block in the editor for non-admins when the feature is not active. [#40209]
+- Add entry to integations modal in block toolbar. [#43126]
+- Add tooltips to integration modal plugin CTAs. [#43102]
+- Add tooltips to the toggle in integrations modal. [#43080]
+- Remove colon after question mark for form labels. [#43133]
+- Hide integrations modal CTA in the sidebar for Simple sites. [#43079]
+- Reduce default padding in form patterns. [#43124]
+- Update modal to use `VStack` and WP icons. [#43084]
+- Inbox: Render source consistently in list and details view. [#43131]
+- Load editor styles from metadata file. [#42751]
+
+### Fixed
+- Fix Creative Mail SVG issue. [#43112]
+- Prevent Google Drive connection attempt without Jetpack user account connection. [#43121]
+- Update form responses link on editor sidebar. [#43143]
+
+## [0.48.0] - 2025-04-15
+### Changed
+- Polish integrations modal. [#43064]
+
+## [0.47.0] - 2025-04-14
+### Changed
+- Close block panels by default. [#42953]
+- Simplify IntegrationCardBody content. [#43020]
+- Update IntegrationCard markup and styles. [#43017]
+
+### Fixed
+- Center pattern button in Form block placeholder. [#42968]
+- Ensure form field hook returns string. [#43011]
+- Fix IntegrationCardHeader toggle styles. [#42942]
+- Fix integration modal tracks events. [#42945]
+- Linting: Clean up various Stylelint violations. [#43010]
+- Linting: Update stylesheets to use WordPress rules for fonts and colors. [#42920] [#42928]
+- Linting: Use double colon notation for pseudo-element selectors. [#43019]
+
+## [0.46.0] - 2025-04-07
+### Added
+- Add controls to IntegrationCard header. [#42930]
+- Add custom hooks for integrations. [#42822]
+- Add header, body, and button components to integrations modal. [#42903]
+- Add endpoint for all integrations. [#42878]
+- Add progress and errors to the form upload field. [#42845]
+- Update CRM integration to hooks. [#42831]
+
+### Changed
+- Add default file label. [#42801]
+- Add consent toggle to Creative Mail card. [#42874]
+- Add brand icons for integrations modal. [#42870]
+- Change default submissions view to dataviews. [#42329]
+- Change path and return for form integrations endpoint. [#42826]
+- Linting: First pass of style coding standards. [#42734]
+- Move shared integration card logic. [#42908]
+- Reorganize form integration modal code. [#42918]
+- Update Creative Mail integration to hooks. [#42828] [#42762] [#42806] [#42809]
+
+### Fixed
+- Ensure response management compatibility with WordPress 6.6. [#42883]
+
+## [0.45.0] - 2025-03-31
+### Added
+- Add third-party integration endpoint. [#42730]
+- Add File Upload field prototype. [#42695]
+
+### Changed
+- Add block integrations modal with feature flag. [#42747]
+- Create IntegrationCard component. [#42771]
+- Update button styles in inspector controls. [#42769]
+- Update IntegrationCard header markup and style. [#42772]
+- Update dependencies. [#42678]
+
+### Fixed
+- Components: Update controls to prevent more deprecation notices. [#42677]
+- Fix sorting of responses in Classic view. [#42764]
+- Fix WordPress `useSelect` warning. [#42675]
+
+## [0.44.0] - 2025-03-24
+### Changed
+- Update editor sidebar copy. [#42642]
+- Update dependencies. [#42564]
+
+### Fixed
+- Components: Prevent deprecation notices by adding `__next40pxDefaultSize` to controls. [#42576]
+- Fix `source` filtering in Classic view for responses management. [#42641]
+- Prevent custom label font sizes from breaking animated label font size reduction. [#42248]
+- Placeholder should always display if it's a non-empty string. [#42173]
+
+## [0.43.0] - 2025-03-18
+### Added
+- Add a quick link to the admin bar to form entries. [#42474]
+
+### Changed
+- Remove Google Drive beta badge. [#42481]
+- Remove Salesforce beta badge. [#42482]
+- Update package dependencies. [#42511]
+
+## [0.42.1] - 2025-03-17
+### Fixed
+- Fix core list bullets not showing. [#42440]
+
+## [0.42.0] - 2025-03-12
+### Added
+- Provide connection data to footer component. [#42000]
+
+### Changed
+- Remove default padding around forms. [#42340]
+- Remove the Jetpack footer on modal. [#42341]
+- Update response management with DataViews. [#41602]
+- Update package dependencies. [#42384]
+
+### Fixed
+- Adjust spacing around DataViews table. [#42348]
+- Fix issue where multiple contact forms on the same page would fail to submit correctly. [#42345]
+- Update date validation method by removing jQuery. [#41698]
+- Update the preview for the different block variations. [#42366]
+
+## [0.41.0] - 2025-03-10
+### Added
+- Add Akismet panel to form block. [#41826]
+
+## [0.40.0] - 2025-03-03
+### Added
+- Add min/max options to number field. [#41783]
+
+### Changed
+- Contact Form: Updated editor styles for improved UI consistency and better alignment of form elements. [#42112]
+- Add accessible name field to advanced settings. [#42101]
+- Simplify placeholder block. [#42141]
+- Use placeholder attribute in editor instead of value. [#41712]
+- Update package dependencies. [#42163]
+
+### Fixed
+- Fix warnings when post author is not available. [#42115]
+- Ensure fields that skip rendering (like empty options fields) do not trigger validation or show value in form submission response. [#41979]
+- Fix 404 error when a user submits an invalid form with JavaScript disabled. [#41947]
+- Fix field name set as label when trying to empty label. [#42125]
+- Show plugin integrations on Atomic. [#42073]
+
+## [0.39.0] - 2025-02-24
+### Changed
+- Add Tracks when connecting Google Drive. [#41825]
+
+### Fixed
+- Fix `empty form` check for select elements. [#41846]
+- Update block editor tracks events. [#41824]
+
+## [0.38.0] - 2025-02-17
+### Added
+- Forms block: Add number input. [#40962]
+
+### Changed
+- Add tracking for plugin installations. [#41732]
+
+### Fixed
+- Fix error setting for field. [#41715]
+- Fix missing translations in choice field settings. [#41719]
+- Fix syncing of shared styles for nested fields. [#41708]
+- Vertically align submit button in single row. [#41576]
+
+## [0.37.1] - 2025-02-11
+### Fixed
+- Fix missing translations. [#41671]
+
+## [0.37.0] - 2025-02-10
+### Added
+- Add a new file upload field block to allow visitors to upload files through contact forms. [#41582]
+- Add support for having multiple forms across paginated pages. [#41407]
+- Update fields and button blocks to support contentOnly editing. [#41411]
+- Tests: Verify empty forms do not submit. [#41504]
+
+### Changed
+- File Upload Field block: Use WordPress upload icon and follow consistent field patterns (currently in beta). [#41586]
+- Track forms submissions in order to improve the product. [#41307]
+- Update package dependencies. [#41491]
+
+### Fixed
+- Fix submit button width and alignment. [#41139]
+- Fix block style variations not showing in the editor. [#41457]
+- Fix the date format input if multiple date pickers are used with different date formats. [#41611]
+- Fix invalid HTML IDs. [#41564]
+- Hide fields without options. [#41443]
+- Improve the styling options of the separator block when placed inside the form block. [#40967]
+
+## [0.36.0] - 2025-02-03
+### Added
+- Prevent empty client-side form submission. [#41464]
+
+### Changed
+- Remove legacy code and improve code quality. [#41348]
+- Rename contact form block placeholder to "Forms". [#41384]
+- Update package dependencies. [#41286]
+
+### Fixed
+- Add wrapping div to the core HTML block when inserted inside the form block. [#41269]
+- Code: Remove extra params on function calls. [#41263]
+- Feedback: Fix encoding when going from spam to regular type. [#41359]
+- Feedback: Fix missing spacing bug in list view. [#41367]
+- Fix date picker styles in dark themes. [#41342]
+- Fix field spacing and widths. [#41415]
+- Fix permanent deletion of form reponses via quicklinks. [#41321]
+- Fix submission when date field errored. [#41511]
+- Hide empty radio fields. [#41379]
+- Prevent empty style values within form field block attributes. [#41206]
+- Prevent error in block placeholder when the Forms module is disabled. [#41382]
+- Translations: Fix spam % character. [#41345]
+
+## [0.35.1] - 2025-01-27
+### Added
+- Add Checkbox and Consent field enter action to create a new block. [#41297]
+- Create new default block when pressing Enter on text inputs. [#41177]
+
+### Changed
+- Remove wrapping <div> element from form block. [#41274]
+
+### Fixed
+- Add missing deprecation for checkboxes and radio fields. [#41198]
+- Fix the default checkstate for admins. [#40847]
+- Add unique ids to each form. [#40998]
+- Fix send to settings for multiple authors. [#41290]
+- Make the icons show up as expected in the style editor. [#41314]
+- Update the icon colours to the new standard. [#41250]
+
+## [0.35.0] - 2025-01-20
+### Added
+- Forms: Allow HTML block within forms. [#41040]
+- Forms: Handle `Enter` on empty radio/checkbox input. [#41082]
+
+### Changed
+- Code: Use function-style exit() and die() with a default status code of 0. [#41167]
+- Forms: rename "URL" field to "Website" [#41029]
+- Forms: settings, opt-in for default 40px size in gutenberg [#41127]
+- Forms: update width control to use more modern ToggleGroupControl [#41130]
+- Forms: use core icons for phone and email fields [#41034]
+- Updated package dependencies. [#41099]
+
+### Fixed
+- Forms: Fix dropdown icon styling. [#41074]
+- Forms: Fix redirect field styles [#41030]
+- Forms: fix spacing issue in sidebar settings [#41133]
+- Forms: Properly support formatting options for labels and required text [#40924]
+
+## [0.34.6] - 2025-01-13
+### Fixed
+- Add webpack plugin to rename RTL files to match core WP expectations. [#40881]
+- Show email only in form submission view if name is empty. [#40898]
+- Forms: Fix success message color inside a dark Cover block. [#40917]
+- Forms: Update default URL field label to match front-end. [#40921]
+
+## [0.34.5] - 2025-01-06
+### Changed
+- Updated package dependencies. [#40705] [#40784] [#40792] [#40800] [#40831]
+
+### Fixed
+- Form block: Fix submit button styles when there are errors. [#40762]
+
+## [0.34.4] - 2024-12-16
+### Changed
+- Updated package dependencies. [#40564]
+
+### Fixed
+- Form Block: Fix validation of URL input types to allow query strings. [#40490]
+
+## [0.34.3] - 2024-12-09
+### Changed
+- Updated package dependencies. [#40363]
+
+## [0.34.2] - 2024-11-26
+### Changed
+- Update dependencies. [#39855]
+
+## [0.34.1] - 2024-11-25
+### Changed
+- Updated dependencies. [#40286]
+- Updated package dependencies. [#40288]
+
+### Fixed
+- Forms: fixed arrow positioning on select elements [#40206]
+
+## [0.34.0] - 2024-11-18
+### Removed
+- General: Update minimum PHP version to 7.2. [#40147]
+
+### Fixed
+- Fix a fatal error occurring due to a function receiving an unexpected input type. [#40183]
+
+## [0.33.8] - 2024-11-11
+### Changed
+- Updated package dependencies. [#39999] [#40060]
+
+## [0.33.7] - 2024-11-04
+### Added
+- Enable test coverage. [#39961]
+
+### Fixed
+- Fix PHPUnit coverage warnings. [#39989]
+
+## [0.33.6] - 2024-10-29
+### Changed
+- Components: Add __nextHasNoMarginBottom to BaseControl-based components, preventing deprecation notices. [#39877]
+
+## [0.33.5] - 2024-10-28
+### Changed
+- Updated package dependencies. [#39910]
+
+## [0.33.4] - 2024-10-21
+### Changed
+- Update dependencies. [#39781]
+
+## [0.33.3] - 2024-10-14
+### Changed
+- Only include `wp-polyfill` as a script dependency when needed. [#39629]
+- Updated package dependencies. [#39707]
+
+### Fixed
+- Improve security of the form endpoint. [#39759]
+
+## [0.33.2] - 2024-10-07
+### Changed
+- Updated package dependencies. [#39594]
+
+## [0.33.1] - 2024-09-30
+### Changed
+- Internal updates.
+
+## [0.33.0] - 2024-09-23
+### Added
+- New filter to allow for excluding the contact form submission IP from being saved or e-mailed. [#39395]
+
+### Changed
+- Options: Get selection from the element's document instead of the global `window`. [#39364]
+- Refactor Choice fields [#39141]
+
+## [0.32.16] - 2024-09-16
+### Changed
+- Email submissions: on sites using www., ensure that the sending email address does not use the www. prefix. [#39370]
+
+### Fixed
+- Use en-dash in numeric range in i18n message to conform to guidelines. [#39305]
+
+## [0.32.15] - 2024-09-10
+### Changed
+- Updated package dependencies. [#39302]
+
+## [0.32.14] - 2024-09-09
+### Changed
+- Updated package dependencies. [#39176] [#39278]
+
+### Fixed
+- Contact Forms: added checks for unexpected contents of textarea elements. [#39271]
+
+## [0.32.13] - 2024-09-04
+### Changed
+- Check for private and password-protected posts when handling the contact form submissions. [#39238]
+
+## [0.32.12] - 2024-09-02
+### Changed
+- Forms: update child blocks to Block API v3 [#38916]
+- Updated package dependencies. [#39111]
+
+## [0.32.11] - 2024-08-26
+### Changed
+- Updated package dependencies. [#39004]
+
+## [0.32.10] - 2024-08-21
+### Changed
+- Internal updates.
+
+## [0.32.9] - 2024-08-19
+### Changed
+- Updated package dependencies. [#38662]
+
+### Fixed
+- Lossless image optimization for images (should improve performance with no visible changes). [#38750]
+
+## [0.32.8] - 2024-08-12
+### Added
+- React 19 compatibility: Making sure useRef includes an argument. [#38765]
+
+## [0.32.7] - 2024-08-05
+### Changed
+- React compatibility: Changing ReactDOM.render usage to be via ReactDOM.createRoot. [#38649]
+
+## [0.32.6] - 2024-07-29
+### Changed
+- Update dependencies. [#38558]
+
+## [0.32.5] - 2024-07-22
+### Fixed
+- Block Picker: Fixed display of the picker in the block editor following changes in WordPress 6.6. [#38406]
+- Form Submissions Table: Ensured the IP address is displayed for each submission, when available. [#38352]
+
+## [0.32.4] - 2024-07-15
+### Changed
+- Internal updates.
+
+## [0.32.3] - 2024-07-08
+### Changed
+- Updated package dependencies. [#38132]
+
 ## [0.32.2] - 2024-06-24
 ### Changed
 - Update dependencies. [#37979]
@@ -281,8 +827,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Jetpack AI Form section to new Forms landing page [#32726]
 
 ### Changed
-- Updated package dependencies. [#32803]
-- Updated package dependencies. [#32804]
+- Updated package dependencies. [#32803] [#32804]
 
 ### Fixed
 - Fix block icons for display on wp.org [#32754]
@@ -463,8 +1008,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Forms: Include bulk actions menu [#29766]
 - Forms: Update Dashboard inbox columns responsiveness and sticky items style [#29914]
 - Updated form responses endpoint to embed available filter data. [#29805]
-- Updated package dependencies. [#29854]
-- Updated package dependencies. [#29857]
+- Updated package dependencies. [#29854] [#29857]
 
 ### Fixed
 - Made feedback bulk actions more explicit and easier to work with. [#29884]
@@ -598,6 +1142,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a new jetpack/forms package [#28409]
 - Added a public load_contact_form method for initializing the contact form module. [#28416]
 
+[0.56.0]: https://github.com/automattic/jetpack-forms/compare/v0.55.0...v0.56.0
+[0.55.0]: https://github.com/automattic/jetpack-forms/compare/v0.54.0...v0.55.0
+[0.54.0]: https://github.com/automattic/jetpack-forms/compare/v0.53.0...v0.54.0
+[0.53.0]: https://github.com/automattic/jetpack-forms/compare/v0.52.0...v0.53.0
+[0.52.0]: https://github.com/automattic/jetpack-forms/compare/v0.51.0...v0.52.0
+[0.51.0]: https://github.com/automattic/jetpack-forms/compare/v0.50.0...v0.51.0
+[0.50.0]: https://github.com/automattic/jetpack-forms/compare/v0.49.0...v0.50.0
+[0.49.0]: https://github.com/automattic/jetpack-forms/compare/v0.48.0...v0.49.0
+[0.48.0]: https://github.com/automattic/jetpack-forms/compare/v0.47.0...v0.48.0
+[0.47.0]: https://github.com/automattic/jetpack-forms/compare/v0.46.0...v0.47.0
+[0.46.0]: https://github.com/automattic/jetpack-forms/compare/v0.45.0...v0.46.0
+[0.45.0]: https://github.com/automattic/jetpack-forms/compare/v0.44.0...v0.45.0
+[0.44.0]: https://github.com/automattic/jetpack-forms/compare/v0.43.0...v0.44.0
+[0.43.0]: https://github.com/automattic/jetpack-forms/compare/v0.42.1...v0.43.0
+[0.42.1]: https://github.com/automattic/jetpack-forms/compare/v0.42.0...v0.42.1
+[0.42.0]: https://github.com/automattic/jetpack-forms/compare/v0.41.0...v0.42.0
+[0.41.0]: https://github.com/automattic/jetpack-forms/compare/v0.40.0...v0.41.0
+[0.40.0]: https://github.com/automattic/jetpack-forms/compare/v0.39.0...v0.40.0
+[0.39.0]: https://github.com/automattic/jetpack-forms/compare/v0.38.0...v0.39.0
+[0.38.0]: https://github.com/automattic/jetpack-forms/compare/v0.37.1...v0.38.0
+[0.37.1]: https://github.com/automattic/jetpack-forms/compare/v0.37.0...v0.37.1
+[0.37.0]: https://github.com/automattic/jetpack-forms/compare/v0.36.0...v0.37.0
+[0.36.0]: https://github.com/automattic/jetpack-forms/compare/v0.35.1...v0.36.0
+[0.35.1]: https://github.com/automattic/jetpack-forms/compare/v0.35.0...v0.35.1
+[0.35.0]: https://github.com/automattic/jetpack-forms/compare/v0.34.6...v0.35.0
+[0.34.6]: https://github.com/automattic/jetpack-forms/compare/v0.34.5...v0.34.6
+[0.34.5]: https://github.com/automattic/jetpack-forms/compare/v0.34.4...v0.34.5
+[0.34.4]: https://github.com/automattic/jetpack-forms/compare/v0.34.3...v0.34.4
+[0.34.3]: https://github.com/automattic/jetpack-forms/compare/v0.34.2...v0.34.3
+[0.34.2]: https://github.com/automattic/jetpack-forms/compare/v0.34.1...v0.34.2
+[0.34.1]: https://github.com/automattic/jetpack-forms/compare/v0.34.0...v0.34.1
+[0.34.0]: https://github.com/automattic/jetpack-forms/compare/v0.33.8...v0.34.0
+[0.33.8]: https://github.com/automattic/jetpack-forms/compare/v0.33.7...v0.33.8
+[0.33.7]: https://github.com/automattic/jetpack-forms/compare/v0.33.6...v0.33.7
+[0.33.6]: https://github.com/automattic/jetpack-forms/compare/v0.33.5...v0.33.6
+[0.33.5]: https://github.com/automattic/jetpack-forms/compare/v0.33.4...v0.33.5
+[0.33.4]: https://github.com/automattic/jetpack-forms/compare/v0.33.3...v0.33.4
+[0.33.3]: https://github.com/automattic/jetpack-forms/compare/v0.33.2...v0.33.3
+[0.33.2]: https://github.com/automattic/jetpack-forms/compare/v0.33.1...v0.33.2
+[0.33.1]: https://github.com/automattic/jetpack-forms/compare/v0.33.0...v0.33.1
+[0.33.0]: https://github.com/automattic/jetpack-forms/compare/v0.32.16...v0.33.0
+[0.32.16]: https://github.com/automattic/jetpack-forms/compare/v0.32.15...v0.32.16
+[0.32.15]: https://github.com/automattic/jetpack-forms/compare/v0.32.14...v0.32.15
+[0.32.14]: https://github.com/automattic/jetpack-forms/compare/v0.32.13...v0.32.14
+[0.32.13]: https://github.com/automattic/jetpack-forms/compare/v0.32.12...v0.32.13
+[0.32.12]: https://github.com/automattic/jetpack-forms/compare/v0.32.11...v0.32.12
+[0.32.11]: https://github.com/automattic/jetpack-forms/compare/v0.32.10...v0.32.11
+[0.32.10]: https://github.com/automattic/jetpack-forms/compare/v0.32.9...v0.32.10
+[0.32.9]: https://github.com/automattic/jetpack-forms/compare/v0.32.8...v0.32.9
+[0.32.8]: https://github.com/automattic/jetpack-forms/compare/v0.32.7...v0.32.8
+[0.32.7]: https://github.com/automattic/jetpack-forms/compare/v0.32.6...v0.32.7
+[0.32.6]: https://github.com/automattic/jetpack-forms/compare/v0.32.5...v0.32.6
+[0.32.5]: https://github.com/automattic/jetpack-forms/compare/v0.32.4...v0.32.5
+[0.32.4]: https://github.com/automattic/jetpack-forms/compare/v0.32.3...v0.32.4
+[0.32.3]: https://github.com/automattic/jetpack-forms/compare/v0.32.2...v0.32.3
 [0.32.2]: https://github.com/automattic/jetpack-forms/compare/v0.32.1...v0.32.2
 [0.32.1]: https://github.com/automattic/jetpack-forms/compare/v0.32.0...v0.32.1
 [0.32.0]: https://github.com/automattic/jetpack-forms/compare/v0.31.4...v0.32.0

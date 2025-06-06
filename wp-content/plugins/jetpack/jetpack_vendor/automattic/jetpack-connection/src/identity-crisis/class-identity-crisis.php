@@ -241,7 +241,7 @@ class Identity_Crisis {
 		$consumer_data = UI::get_consumer_data();
 		$label         = isset( $consumer_data['customContent']['adminBarSafeModeLabel'] )
 			? esc_html( $consumer_data['customContent']['adminBarSafeModeLabel'] )
-			: esc_html__( 'Jetpack Safe Mode', 'jetpack-idc' );
+			: esc_html__( 'Jetpack Safe Mode', 'jetpack-connection' );
 
 		$title = sprintf(
 			'<span class="jp-idc-admin-bar">%s %s</span>',
@@ -448,7 +448,7 @@ class Identity_Crisis {
 				'cannot_parse_url',
 				sprintf(
 				/* translators: %s: URL to parse. */
-					esc_html__( 'Cannot parse URL %s', 'jetpack-idc' ),
+					esc_html__( 'Cannot parse URL %s', 'jetpack-connection' ),
 					$url
 				)
 			);
@@ -667,6 +667,12 @@ class Identity_Crisis {
 	 * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag -- The exception is being caught, false positive.
 	 */
 	public static function add_secret_to_url_validation_response( array $response ) {
+		// Only checking the database option to limit the effect.
+		if ( get_option( 'jetpack_offline_mode' ) ) {
+			$response['offline_mode'] = '1';
+			return $response;
+		}
+
 		try {
 			$secret = new URL_Secret();
 

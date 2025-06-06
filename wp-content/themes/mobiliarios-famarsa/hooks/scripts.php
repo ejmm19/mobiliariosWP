@@ -25,7 +25,16 @@ function assets(): void
         '1.0',
         'all'
     );
-    wp_enqueue_style('stylesheet', get_stylesheet_uri(), ['bootstrap', 'ubuntu', 'NotoSans'], '1.0', 'all');
+    // add fontawesome
+    wp_register_style(
+        'fontawesome',
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css',
+        '',
+        '6.0.0-beta3',
+        'all'
+    );
+
+    wp_enqueue_style('stylesheet', get_stylesheet_uri(), ['bootstrap', 'ubuntu', 'NotoSans', 'fontawesome'], '1.0', 'all');
 
     wp_register_script(
         'bootstrap',

@@ -14,7 +14,7 @@ use Automattic\Jetpack\Status\Host;
  */
 class Main {
 
-	const PACKAGE_VERSION = '0.2.5';
+	const PACKAGE_VERSION = '0.17.5';
 
 	/**
 	 * Initializer.
@@ -29,15 +29,17 @@ class Main {
 
 		new Admin_Color_Schemes();
 
-		if ( function_exists( 'wpcom_is_nav_redesign_enabled' ) && wpcom_is_nav_redesign_enabled() ) {
+		remove_filter( 'pre_option_wpcom_admin_interface', 'wpcom_admin_interface_pre_get_option' );
+		$is_wp_admin_interface = get_option( 'wpcom_admin_interface' ) === 'wp-admin';
+		if ( function_exists( 'wpcom_admin_interface_pre_get_option' ) ) {
+			add_filter( 'pre_option_wpcom_admin_interface', 'wpcom_admin_interface_pre_get_option', 10 );
+		}
+
+		if ( $is_wp_admin_interface ) {
 			return;
 		}
 
 		$host = new Host();
-
-		if ( ! $host->is_wpcom_simple() ) {
-			new Masterbar();
-		}
 
 		if ( $host->is_wpcom_platform() ) {
 			new Inline_Help();

@@ -4,6 +4,7 @@
  *
  * @package automattic/jetpack
  */
+use Automattic\Jetpack\Status\Host;
 
 if ( ! class_exists( 'Featured_Content' ) && isset( $GLOBALS['pagenow'] ) && 'plugins.php' !== $GLOBALS['pagenow'] ) {
 
@@ -238,10 +239,10 @@ if ( ! class_exists( 'Featured_Content' ) && isset( $GLOBALS['pagenow'] ) && 'pl
 		 * @deprecated 13.6 Moved to Classic Theme Helper package.
 		 * @uses Featured_Content::get_setting()
 		 *
-		 * @param array $terms A list of term objects. This is the return value of get_the_terms().
-		 * @param int   $id The ID field for the post object that terms are associated with.
-		 * @param array $taxonomy An array of taxonomy slugs.
-		 * @return array $terms
+		 * @param \WP_Term[]|\WP_Error $terms A list of term objects. This is the return value of get_the_terms().
+		 * @param int                  $id The ID field for the post object that terms are associated with.
+		 * @param string               $taxonomy The slug of the taxonomy.
+		 * @return \WP_Term[]|\WP_Error $terms
 		 */
 		public static function hide_the_featured_term( $terms, $id, $taxonomy ) {
 			_deprecated_function( __METHOD__, 'jetpack-13.6', 'Automattic\\Jetpack\\Classic_Theme_Helper\\Featured_Content\\hide_the_featured_term' );
@@ -357,5 +358,7 @@ if ( ! class_exists( 'Featured_Content' ) && isset( $GLOBALS['pagenow'] ) && 'pl
 		}
 	}
 
-	Automattic\Jetpack\Classic_Theme_Helper\Featured_Content::setup();
+	if ( ! ( new Host() )->is_wpcom_platform() ) {
+		Automattic\Jetpack\Classic_Theme_Helper\Featured_Content::setup();
+	}
 }

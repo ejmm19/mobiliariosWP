@@ -61,6 +61,15 @@ abstract class SAL_Site {
 	}
 
 	/**
+	 * Returns the site slug.
+	 *
+	 * @return string
+	 */
+	public function get_slug() {
+		return ( new Status() )->get_site_suffix();
+	}
+
+	/**
 	 * Returns the site name.
 	 *
 	 * @return string
@@ -417,6 +426,25 @@ abstract class SAL_Site {
 	abstract public function is_deleted();
 
 	/**
+	 * Indicates that a site is an A4A client. Not used in Jetpack.
+	 *
+	 * @see class.json-api-site-jetpack.php for implementation.
+	 */
+	abstract public function is_a4a_client();
+
+	/**
+	 * Indicates that a site is an A4A dev site.
+	 *
+	 * @return bool
+	 */
+	public function is_a4a_dev_site() {
+		if ( function_exists( 'has_blog_sticker' ) ) {
+			return has_blog_sticker( 'a4a-is-dev-site' );
+		}
+		return false;
+	}
+
+	/**
 	 * Return the user interactions with a site. Not used in Jetpack.
 	 *
 	 * @param string $role The capability to check.
@@ -739,8 +767,8 @@ abstract class SAL_Site {
 		if ( ! $post || is_wp_error( $post ) ) {
 			return false;
 		}
-
-		if ( 'inherit' === $post->post_status ) {
+		// If the post is of status inherit, check if the parent exists ( different to 0 ) to check for the parent status object.
+		if ( 'inherit' === $post->post_status && 0 !== (int) $post->post_parent ) {
 			$parent_post     = get_post( $post->post_parent );
 			$post_status_obj = get_post_status_object( $parent_post->post_status );
 		} else {
@@ -940,16 +968,6 @@ abstract class SAL_Site {
 			'delete_users'        => $this->current_user_can( 'delete_users' ),
 			'remove_users'        => $this->current_user_can( 'remove_users' ),
 			'own_site'            => $is_wpcom_blog_owner,
-			/**
-			 * Filter whether the Hosting section in Calypso should be available for site.
-			 *
-			 * @module json-api
-			 *
-			 * @since 8.2.0
-			 *
-			 * @param bool $view_hosting Can site access Hosting section. Default to false.
-			 */
-			'view_hosting'        => apply_filters( 'jetpack_json_api_site_can_view_hosting', false ),
 			'view_stats'          => stats_is_blog_user( $this->blog_id ),
 			'activate_plugins'    => $this->current_user_can( 'activate_plugins' ),
 			'update_plugins'      => $this->current_user_can( 'update_plugins' ),
@@ -1048,6 +1066,29 @@ abstract class SAL_Site {
 	 **/
 	public function get_theme_slug() {
 		return get_option( 'stylesheet' );
+	}
+
+	/**
+	 * Returns a list of errors for broken themes on the site.
+	 *
+	 * @return array
+	 */
+	public function get_theme_errors() {
+		$themes_with_errors = wp_get_themes( array( 'errors' => true ) );
+		$theme_errors       = array();
+
+		foreach ( $themes_with_errors as $theme ) {
+			$errors = $theme->errors();
+
+			if ( is_wp_error( $errors ) && ! empty( $errors->get_error_messages() ) ) {
+				$theme_errors[] = array(
+					'name'   => sanitize_title( $theme->get( 'Name' ) ),
+					'errors' => (array) $errors->get_error_messages(),
+				);
+			}
+		}
+
+		return $theme_errors;
 	}
 
 	/**
@@ -1479,6 +1520,15 @@ abstract class SAL_Site {
 	}
 
 	/**
+	 * Get the option of site partner bundle which value is coming from the Partner Flow
+	 *
+	 * @return string
+	 */
+	public function get_site_partner_bundle() {
+		return get_option( 'site_partner_bundle', '' );
+	}
+
+	/**
 	 * Get site option to determine if and how to display launchpad onboarding
 	 *
 	 * @return string
@@ -1509,6 +1559,15 @@ abstract class SAL_Site {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Get site option for migration source site domain
+	 *
+	 * @return string
+	 */
+	public function get_migration_source_site_domain() {
+		return get_option( 'migration_source_site_domain', '' );
 	}
 
 	/**

@@ -64,7 +64,7 @@ class UI {
 				__FILE__,
 				array(
 					'in_footer'  => true,
-					'textdomain' => 'jetpack-idc',
+					'textdomain' => 'jetpack-connection',
 				)
 			);
 			Assets::enqueue_script( 'jp_identity_crisis_banner' );
@@ -162,10 +162,13 @@ class UI {
 
 		$consumer_chosen     = null;
 		$consumer_url_length = 0;
-
-		foreach ( $consumers as $consumer ) {
+		foreach ( $consumers as &$consumer ) {
 			if ( empty( $consumer['admin_page'] ) || ! is_string( $consumer['admin_page'] ) ) {
 				continue;
+			}
+
+			if ( isset( $consumer['customContent'] ) && is_callable( $consumer['customContent'] ) ) {
+				$consumer['customContent'] = call_user_func( $consumer['customContent'] );
 			}
 
 			if ( isset( $_SERVER['REQUEST_URI'] ) && str_starts_with( filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ) ), $consumer['admin_page'] ) && strlen( $consumer['admin_page'] ) > $consumer_url_length ) {
@@ -173,6 +176,7 @@ class UI {
 				$consumer_url_length = strlen( $consumer['admin_page'] );
 			}
 		}
+		unset( $consumer );
 
 		static::$consumers = $consumer_chosen ? $consumer_chosen : array_shift( $consumers );
 

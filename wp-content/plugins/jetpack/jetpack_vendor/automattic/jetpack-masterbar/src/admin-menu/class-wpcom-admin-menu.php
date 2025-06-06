@@ -7,7 +7,7 @@
 
 namespace Automattic\Jetpack\Masterbar;
 
-use Automattic\Jetpack\Status;
+use Automattic\Jetpack\Subscribers_Dashboard\Dashboard as Subscribers_Dashboard;
 use Jetpack_Custom_CSS;
 use JITM;
 
@@ -33,6 +33,7 @@ class WPcom_Admin_Menu extends Admin_Menu {
 		add_action( 'wp_ajax_sidebar_state', array( $this, 'ajax_sidebar_state' ) );
 		add_action( 'wp_ajax_jitm_dismiss', array( $this, 'wp_ajax_jitm_dismiss' ) );
 		add_action( 'wp_ajax_upsell_nudge_jitm', array( $this, 'wp_ajax_upsell_nudge_jitm' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'wpcom_upsell_nudge_jitm_fix' ) );
 		add_action( 'admin_init', array( $this, 'sync_sidebar_collapsed_state' ) );
 		add_action( 'admin_menu', array( $this, 'remove_submenus' ), 140 ); // After hookpress hook at 130.
 	}
@@ -44,13 +45,10 @@ class WPcom_Admin_Menu extends Admin_Menu {
 		parent::reregister_menu_items();
 
 		$this->add_my_home_menu();
-		$this->add_my_mailboxes_menu();
 		$this->remove_gutenberg_menu();
 
 		// Not needed outside of wp-admin.
 		if ( ! $this->is_api_request ) {
-			$this->add_browse_sites_link();
-			$this->add_site_card_menu();
 			$this->add_new_site_link();
 		}
 
@@ -102,20 +100,6 @@ class WPcom_Admin_Menu extends Admin_Menu {
 	}
 
 	/**
-	 * Adds the site switcher link if user has more than one site.
-	 */
-	public function add_browse_sites_link() {
-		if ( $this->get_current_user_blog_count() < 2 ) {
-			return;
-		}
-
-		// Add the menu item.
-		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
-		add_menu_page( __( 'site-switcher', 'jetpack-masterbar' ), __( 'Browse sites', 'jetpack-masterbar' ), 'read', 'https://wordpress.com/sites', null, 'dashicons-arrow-left-alt2', 0 );
-		add_filter( 'add_menu_classes', array( $this, 'set_browse_sites_link_class' ) );
-	}
-
-	/**
 	 * Adds a custom element class for Site Switcher menu item.
 	 *
 	 * @param array $menu Associative array of administration menu items.
@@ -145,81 +129,6 @@ class WPcom_Admin_Menu extends Admin_Menu {
 		$this->add_admin_menu_separator();
 		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
 		add_menu_page( __( 'Add New Site', 'jetpack-masterbar' ), __( 'Add New Site', 'jetpack-masterbar' ), 'read', 'https://wordpress.com/start?ref=calypso-sidebar', null, 'dashicons-plus-alt' );
-	}
-
-	/**
-	 * Adds site card component.
-	 */
-	public function add_site_card_menu() {
-		$default         = plugins_url( 'globe-icon.svg', __FILE__ );
-		$icon            = get_site_icon_url( 32, $default );
-		$blog_name       = get_option( 'blogname' ) !== '' ? get_option( 'blogname' ) : $this->domain;
-		$status          = new Status();
-		$is_private_site = $status->is_private_site();
-		$is_coming_soon  = $status->is_coming_soon();
-
-		if ( $default === $icon && blavatar_exists( $this->domain ) ) {
-			$icon = blavatar_url( $this->domain, 'img', 32 );
-		}
-
-		$badge = '';
-		if ( $is_private_site || $is_coming_soon ) {
-			$badge .= sprintf(
-				'<span class="site__badge site__badge-private">%s</span>',
-				$is_coming_soon ? esc_html__( 'Coming Soon', 'jetpack-masterbar' ) : esc_html__( 'Private', 'jetpack-masterbar' )
-			);
-		}
-
-		if ( function_exists( 'is_simple_site_redirect' ) && is_simple_site_redirect( $this->domain ) ) {
-			$badge .= '<span class="site__badge site__badge-redirect">' . esc_html__( 'Redirect', 'jetpack-masterbar' ) . '</span>';
-		}
-
-		if ( ! empty( get_option( 'options' )['is_domain_only'] ) ) {
-			$badge .= '<span class="site__badge site__badge-domain-only">' . esc_html__( 'Domain', 'jetpack-masterbar' ) . '</span>';
-		}
-
-		$site_card = '
-<div class="site__info">
-	<div class="site__title">%1$s</div>
-	<div class="site__domain">%2$s</div>
-	%3$s
-</div>';
-
-		$site_card = sprintf(
-			$site_card,
-			$blog_name,
-			$this->domain,
-			$badge
-		);
-
-		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
-		add_menu_page( 'site-card', $site_card, 'read', get_home_url(), null, $icon, 1 );
-		add_filter( 'add_menu_classes', array( $this, 'set_site_card_menu_class' ) );
-	}
-
-	/**
-	 * Adds a custom element class and id for Site Card's menu item.
-	 *
-	 * @param array $menu Associative array of administration menu items.
-	 * @return array
-	 */
-	public function set_site_card_menu_class( array $menu ) {
-		foreach ( $menu as $key => $menu_item ) {
-			if ( 'site-card' !== $menu_item[3] ) {
-				continue;
-			}
-
-			$classes = ' toplevel_page_site-card';
-			if ( blavatar_exists( $this->domain ) ) {
-				$classes .= ' has-site-icon';
-			}
-
-			$menu[ $key ][4] = $menu_item[4] . $classes;
-			$menu[ $key ][5] = 'toplevel_page_site_card';
-			break;
-		}
-
-		return $menu;
 	}
 
 	/**
@@ -365,8 +274,13 @@ class WPcom_Admin_Menu extends Admin_Menu {
 		$this->update_submenus( $slug, $submenus_to_update );
 		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
 		add_submenu_page( 'users.php', esc_attr__( 'Add New User', 'jetpack-masterbar' ), __( 'Add New User', 'jetpack-masterbar' ), 'promote_users', 'https://wordpress.com/people/new/' . $this->domain, null, 1 );
-		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
-		add_submenu_page( 'users.php', esc_attr__( 'Subscribers', 'jetpack-masterbar' ), __( 'Subscribers', 'jetpack-masterbar' ), 'list_users', 'https://wordpress.com/subscribers/' . $this->domain, null, 3 );
+		if ( ! apply_filters( 'jetpack_wp_admin_subscriber_management_enabled', false ) ) {
+			// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
+			add_submenu_page( 'users.php', esc_attr__( 'Subscribers', 'jetpack-masterbar' ), __( 'Subscribers', 'jetpack-masterbar' ), 'list_users', 'https://wordpress.com/subscribers/' . $this->domain, null, 3 );
+		} else {
+			$subscribers_dashboard = new Subscribers_Dashboard();
+			$subscribers_dashboard->add_wp_admin_submenu();
+		}
 	}
 
 	/**
@@ -376,7 +290,7 @@ class WPcom_Admin_Menu extends Admin_Menu {
 		parent::add_options_menu();
 
 		// @phan-suppress-next-line PhanTypeMismatchArgumentProbablyReal -- Core should ideally document null for no-callback arg. https://core.trac.wordpress.org/ticket/52539.
-		add_submenu_page( 'options-general.php', esc_attr__( 'Hosting Configuration', 'jetpack-masterbar' ), __( 'Hosting Configuration', 'jetpack-masterbar' ), 'manage_options', 'https://wordpress.com/hosting-config/' . $this->domain, null, 10 );
+		add_submenu_page( 'options-general.php', esc_attr__( 'Hosting Features', 'jetpack-masterbar' ), __( 'Hosting Features', 'jetpack-masterbar' ), 'manage_options', 'https://wordpress.com/hosting-features/' . $this->domain, null, 10 );
 	}
 
 	/**
@@ -433,7 +347,7 @@ class WPcom_Admin_Menu extends Admin_Menu {
 
 		update_user_attribute( $user_id, 'calypso_preferences', $value );
 
-		die();
+		die( 0 );
 	}
 
 	/**

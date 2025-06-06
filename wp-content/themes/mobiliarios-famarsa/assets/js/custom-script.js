@@ -30,69 +30,8 @@ if (typeof sliders !== 'undefined') {
     jQuery(document).on('click', "#elements-carousel .carousel-item-slide img", function (e) {
         let slug = e.target.getAttribute('data-action');
         console.log(slug);
-        ajaxRequest(slug, (response) => {
-                AppItems.elements = response;
-                console.log(response);
-            }
-        );
-    })
-
-    let AppItems = new Vue({
-        el: "#elements-products-item",
-        data: {
-            elements: '',
-            products: [
-                {
-                    name: 'nombre del producto', img: 'https://mobiliarios-wp.test/wp-content/uploads/2024/07/galant-cajonera-con-ruedas-chapa-fresno-con-tinte-negro__0613253_pe686183_s5.avif'
-                },
-                {
-                    name: 'nombre del producto', img: 'https://mobiliarios-wp.test/wp-content/uploads/2024/07/galant-cajonera-con-ruedas-chapa-fresno-con-tinte-negro__0613253_pe686183_s5.avif'
-                },
-                {
-                    name: 'nombre del producto', img: 'https://mobiliarios-wp.test/wp-content/uploads/2024/07/galant-cajonera-con-ruedas-chapa-fresno-con-tinte-negro__0613253_pe686183_s5.avif'
-                },
-                {
-                    name: 'nombre del producto', img: 'https://mobiliarios-wp.test/wp-content/uploads/2024/07/galant-cajonera-con-ruedas-chapa-fresno-con-tinte-negro__0613253_pe686183_s5.avif'
-                },
-                {
-                    name: 'nombre del producto', img: 'https://mobiliarios-wp.test/wp-content/uploads/2024/07/galant-cajonera-con-ruedas-chapa-fresno-con-tinte-negro__0613253_pe686183_s5.avif'
-                },
-                {
-                    name: 'nombre del producto', img: 'https://mobiliarios-wp.test/wp-content/uploads/2024/07/galant-cajonera-con-ruedas-chapa-fresno-con-tinte-negro__0613253_pe686183_s5.avif'
-                },
-                {
-                    name: 'nombre del producto', img: 'https://mobiliarios-wp.test/wp-content/uploads/2024/07/galant-cajonera-con-ruedas-chapa-fresno-con-tinte-negro__0613253_pe686183_s5.avif'
-                },
-                {
-                    name: 'nombre del producto', img: 'https://mobiliarios-wp.test/wp-content/uploads/2024/07/galant-cajonera-con-ruedas-chapa-fresno-con-tinte-negro__0613253_pe686183_s5.avif'
-                }
-            ]
+        if (slug) {
+            window.location.href = window.location.origin + '/categoria?category=' + slug;
         }
     });
-
-    /**
-     *
-     * @param data
-     * @param callback
-     * @constructor
-     */
-    const ajaxRequest = (data, callback) => {
-        jQuery.ajax({
-            type: 'POST',
-            url: mf_ajax_object.ajax_url,
-            data: {
-                action: 'my_action',
-                security: mf_ajax_object.nonce,
-                data: data
-            },
-            success: function(response) {
-                if (typeof callback === 'function') {
-                    callback(response);
-                }
-            },
-            error: function() {
-                console.log('Hubo un error en la solicitud AJAX.');
-            }
-        });
-    }
 }

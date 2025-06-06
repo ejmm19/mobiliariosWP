@@ -10,7 +10,7 @@ namespace Automattic\Jetpack\Classic_Theme_Helper;
 use Automattic\Jetpack\Assets;
 use WP_Customize_Manager;
 use WP_Query;
-if ( ! class_exists( __NAMESPACE__ . '\Featured_Content' ) && isset( $GLOBALS['pagenow'] ) && 'plugins.php' !== $GLOBALS['pagenow'] ) {
+if ( ! class_exists( __NAMESPACE__ . '\Featured_Content' ) ) {
 
 	/**
 	 * Featured Content.
@@ -88,6 +88,9 @@ if ( ! class_exists( __NAMESPACE__ . '\Featured_Content' ) && isset( $GLOBALS['p
 		 */
 		public static function init() {
 
+			if ( isset( $GLOBALS['pagenow'] ) && 'plugins.php' === $GLOBALS['pagenow'] ) {
+				return;
+			}
 			/**
 			 * Array variable to store theme support.
 			 *
@@ -461,15 +464,20 @@ if ( ! class_exists( __NAMESPACE__ . '\Featured_Content' ) && isset( $GLOBALS['p
 		 *
 		 * @uses Featured_Content::get_setting()
 		 *
-		 * @param array $terms A list of term objects. This is the return value of get_the_terms().
-		 * @param int   $id The ID field for the post object that terms are associated with.
-		 * @param array $taxonomy An array of taxonomy slugs.
-		 * @return array $terms
+		 * @param \WP_Term[]|\WP_Error $terms A list of term objects. This is the return value of get_the_terms().
+		 * @param int                  $id The ID field for the post object that terms are associated with.
+		 * @param string               $taxonomy The slug of the taxonomy.
+		 * @return \WP_Term[]|\WP_Error $terms
 		 */
 		public static function hide_the_featured_term( $terms, $id, $taxonomy ) {
 
 			// This filter is only appropriate on the front-end.
 			if ( is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) ) {
+				return $terms;
+			}
+
+			// This could be a WP_Error or something invalid from another hook function.
+			if ( ! is_array( $terms ) ) {
 				return $terms;
 			}
 
@@ -488,6 +496,9 @@ if ( ! class_exists( __NAMESPACE__ . '\Featured_Content' ) && isset( $GLOBALS['p
 
 			if ( false !== $tag ) {
 				foreach ( $terms as $order => $term ) {
+					if ( ! $term ) {
+						continue;
+					}
 					if ( $settings['tag-id'] === $term->term_id || $settings['tag-name'] === $term->name ) {
 						unset( $terms[ $order ] );
 					}
@@ -522,11 +533,19 @@ if ( ! class_exists( __NAMESPACE__ . '\Featured_Content' ) && isset( $GLOBALS['p
 				'featured_content',
 				array(
 					'title'          => esc_html__( 'Featured Content', 'jetpack-classic-theme-helper' ),
-					'description'    => sprintf(
+					'description'    => wp_kses(
+						sprintf(
 						/* translators: %1$s: Link to 'featured' admin tag view. %2$s: Max number of posts shown by theme in featured content area. */
-						__( 'Easily feature all posts with the <a href="%1$s">"featured" tag</a> or a tag of your choice. Your theme supports up to %2$s posts in its featured content area.', 'jetpack-classic-theme-helper' ),
-						admin_url( '/edit.php?tag=featured' ),
-						absint( self::$max_posts )
+							__( 'Easily feature all posts with the <a href="%1$s">"featured" tag</a> or a tag of your choice. Your theme supports up to %2$s posts in its featured content area.<br><br>Please note: The featured tag name is case sensitive.', 'jetpack-classic-theme-helper' ),
+							esc_url( admin_url( '/edit.php?tag=featured' ) ),
+							absint( self::$max_posts )
+						),
+						array(
+							'a'  => array(
+								'href' => array(),
+							),
+							'br' => array(),
+						)
 					),
 					'priority'       => 130,
 					'theme_supports' => 'featured-content',
@@ -757,34 +776,4 @@ if ( ! class_exists( __NAMESPACE__ . '\Featured_Content' ) && isset( $GLOBALS['p
 			}
 		}
 	}
-
-    // phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed
-	/**
-	 * Adds the featured content plugin to the set of files for which action
-	 * handlers should be copied when the theme context is loaded by the REST API.
-	 *
-	 * @param array $copy_dirs Copy paths with actions to be copied.
-	 * @return array Copy paths with featured content plugin
-	 */
-	function wpcom_rest_api_featured_content_copy_plugin_actions( $copy_dirs ) {
-		$copy_dirs[] = __FILE__;
-		return $copy_dirs;
-	}
-	add_action( 'restapi_theme_action_copy_dirs', __NAMESPACE__ . '\wpcom_rest_api_featured_content_copy_plugin_actions' );
-
-	/**
-	 * Delayed initialization for API Requests.
-	 *
-	 * @param object $request REST request object.
-	 */
-	function wpcom_rest_request_before_callbacks( $request ) {
-		Featured_Content::init();
-		return $request;
-	}
-
-	if ( defined( 'IS_WPCOM' ) && IS_WPCOM && defined( 'REST_API_REQUEST' ) && REST_API_REQUEST ) {
-		add_filter( 'rest_request_before_callbacks', __NAMESPACE__ . '\wpcom_rest_request_before_callbacks' );
-	}
-
-	Featured_Content::setup();
 }
