@@ -1,11 +1,3 @@
-<?php
-
-use Model\Product;
-
-require_once 'Model/Product.php';
-$productModel = new Product();
-?>
-
 <?php get_header(); ?>
     <main id="home-view" class="container">
         <?php if (have_posts()) : ?>
@@ -15,6 +7,5 @@ $productModel = new Product();
                 <?php the_content(); ?>
             <?php endwhile; ?>
         <?php endif; ?>
-        <!--products-->
     </main>
 <?php get_footer(); ?>

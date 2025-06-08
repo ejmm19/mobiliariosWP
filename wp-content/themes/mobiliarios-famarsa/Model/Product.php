@@ -150,4 +150,39 @@ class Product
 
         return $categories;
     }
+    public function getFeaturedProducts(): array|false|string
+    {
+        // obtener los productos destacados filtrar por el campo 'featured_product' que debe ser un campo personalizado
+        $args = [
+            'post_type' => 'product',
+            'posts_per_page' => -1,
+            'meta_query' => [
+                [
+                    'key' => 'featured_product',
+                    'value' => '1',
+                    'compare' => '='
+                ]
+            ],
+            'orderby' => 'title',
+            'order' => 'ASC'
+        ];
+        $products = new WP_Query($args);
+        ob_start();
+        // obtener los productos destacados como json
+        $featuredProducts = [];
+        if ($products->have_posts()) {
+            while ($products->have_posts()) {
+                $products->the_post();
+                $featuredProducts[] = [
+                    'name' => get_the_title(),
+                    'image' => get_the_post_thumbnail_url(),
+                    'link' => get_the_permalink(),
+                ];
+            }
+        }
+        wp_reset_postdata();
+        $items = json_encode($featuredProducts);
+        $contents = file_get_contents(get_template_directory() . '/elements/html/featured-products.html'); // Cambia a ruta del sistema de archivos
+        return str_replace("[elements]", $items, $contents);
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 
 require_once 'hooks/products.php';
+require_once 'hooks/options.php';
 require_once 'hooks/scripts.php';
 require_once 'hooks/menu.php';
 require_once 'hooks/footer.php';

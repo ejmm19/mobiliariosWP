@@ -51,4 +51,12 @@ function showPreloader(): string
     return ob_get_clean();
 }
 add_shortcode('show_preloader', 'showPreloader');
+
+function featuredProductsList($attr = ['limit' => -1]): string
+{
+    $products = new Product();
+    return $products->getFeaturedProducts(!empty($attr) ? $attr['limit'] : '');
+}
+add_shortcode('featured_products_list', 'featuredProductsList');
+
 /** Shortcodes **/
