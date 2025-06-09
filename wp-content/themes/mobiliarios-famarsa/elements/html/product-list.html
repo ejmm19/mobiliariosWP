@@ -1,0 +1,95 @@
+<div id="product-list-app" class="position-relative">
+    <div class="row">
+        <div class="card col-lg-4 col-6 border-0" v-for="product in products" :key="product.id">
+            <img :src="product.image" alt="Product Image">
+            <div class="d-flex justify-content-between">
+                <p class="p-1">{{ product.name }}</p>
+                <p class="p-1">
+                    <a :href="product.link">
+                        <i class="fa-solid fa-plus"></i>
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script>
+    const ajaxUrl = "ajax_url";
+    const _NonceData = "nonce";
+
+    const vueApp = new Vue({
+        el: '#product-list-app',
+        data: {
+            products: []
+        },
+        mounted() {
+            let current_category = window.location.href.split('/').pop();
+            if (current_category.includes('?category=')) {
+                current_category = current_category.split('?category=')[1];
+            } else if (current_category.includes('category=')) {
+                current_category = current_category.split('category=')[1];
+            } else {
+                current_category = 'almacenamiento';
+            }
+
+            const requestData = {
+                category: current_category,
+                per_page: 10
+            };
+            window.history.pushState({}, '', `?category=${current_category}`);
+            this.updateProducts([]);
+            this.ajaxRequest(requestData, (response) => {
+                this.updateProducts(response);
+            });
+        },
+        methods: {
+            updateProducts(response) {
+                this.products = response.data;
+            },
+            ajaxRequest(data, callback) {
+                jQuery.ajax({
+                    type: 'POST',
+                    url: ajaxUrl,
+                    data: {
+                        action: 'my_action',
+                        security: _NonceData,
+                        data: data
+                    },
+                    dataType: 'json',
+                    beforeSend: function() {
+                        console.log('Enviando solicitud AJAX...');
+                        jQuery('#preloader').removeClass('d-none');
+                    },
+                    success: function(response) {
+                        if (typeof callback === 'function') {
+                            callback(response);
+                        }
+                    },
+                    error: function() {
+                        console.log('Hubo un error en la solicitud AJAX.');
+                    },
+                    complete: function() {
+                        console.log('Solicitud AJAX completada.');
+                        jQuery('#preloader').addClass('d-none');
+                    }
+                });
+            }
+        }
+    });
+
+    jQuery(document).on('click', "#category-list li a", function (e) {
+        e.preventDefault();
+        let slug = e.target.getAttribute('data-action');
+        // cambiar la url
+        window.history.pushState({}, '', `?category=${slug}`);
+        const data = {
+            category: slug,
+            per_page: 10
+        };
+        vueApp.updateProducts([]);
+        vueApp.ajaxRequest(data, (response) => {
+            vueApp.updateProducts(response);
+        });
+    })
+</script>

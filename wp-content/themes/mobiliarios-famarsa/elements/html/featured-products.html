@@ -1,0 +1,52 @@
+<!--vue carousel-->
+<div class="row">
+    <div class="container">
+        <div id="slider-featured-products" data-json='[elements]'></div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-carousel@0.18.0/dist/vue-carousel.min.js"></script>
+<script>
+    let slider_featured_products = jQuery('#slider-featured-products').attr('data-json');
+    if (typeof slider_featured_products !== 'undefined') {
+        const buildSlideMarkup = () => {
+            slider_featured_products = JSON.parse(slider_featured_products);
+            let slideMarkup = '';
+            if (slider_featured_products.length > 0) {
+                for (let i = 0; i < slider_featured_products.length; i++) {
+                    slideMarkup += `<slide class="carousel-item-slide">
+                                <div style="width: 240px; height: 250px;
+                                    background: url('${slider_featured_products[i].image}');
+                                    background-size: cover;
+                                    background-position: center;"
+                                    data-action="${slider_featured_products[i].link}"></div>
+                                <p>${slider_featured_products[i].name}</p>
+                            </slide>`;
+                }
+            }
+            return slideMarkup;
+        };
+
+        /**
+         * @var Vue https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.min.js
+         */
+
+        new Vue({
+            el: '#slider-featured-products',
+            components: {
+                'carousel': VueCarousel.Carousel,
+                'slide': VueCarousel.Slide
+            },
+            template: '<div id="carousel-featured"><carousel :paginationEnabled="false" :navigationEnabled="true" :scrollPerPage="false" :perPageCustom="[[480, 4], [768, 5]]">' + buildSlideMarkup() + '</carousel></div>'
+        });
+
+        jQuery(document).on('click', "#carousel-featured .carousel-item-slide img", function (e) {
+            let slug = e.target.getAttribute('data-action');
+            console.log(slug);
+            if (slug) {
+                window.location.href = window.location.origin + '/categoria?category=' + slug;
+            }
+        });
+    }
+</script>
+
